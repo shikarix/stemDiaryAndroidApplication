@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">StemDiary</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Новости</string>
+    <string name="title_dashboard">Расписание</string>
+    <string name="title_info">Информация</string>
+    <string name="title_shop">Магазин</string>
+    <integer name="com_vk_sdk_AppId">7185644</integer>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="exit_message">Нажмите кнопку \"Назад\" еще раз, чтобы выйти</string>
+    <string-array name="courses_names">
+        <item>Программирование Java. Первый год.</item>
+        <item>Программирование Java. Второй год</item>
+        <item>Программирование Java. Третий год.</item>
+        <item>Робототехника EV-3. Первый год.</item>
+        <item>Робототехника EV-3. Второй год</item>
+        <item>Робототехника EV-3. Третий год</item>
+        <item>Роботехника WEDO. Первый год.</item>
+        <item>Роботехника WEDO. Второй год.</item>
+        <item>Роботехника WEDO. Третий год.</item>
+        <item>Программирование C#. Первый год.</item>
+        <item>Программирование C#. Второй год.</item>
+        <item>Программирование C#. Третий год.</item>
+    </string-array>
+    <string-array name="students">
+        <item>Васильев Алексей</item>
+        <item>Еремин Вадим</item>
+        <item>Елисеенко Юрий</item>
+        <item>Елисеенко Елена</item>
+        <item>Иван Иванов</item>
+        <item>Петр Петров</item>
+        <item>Юсер Дефолтный</item>
+        <item>Вадим Оввовофов</item>
+        <item>Товарищ Товарищев</item>
+        <item>Раз Разов</item>
+        <item>Два Двов</item>
+        <item>Дверь Дверёва</item>
+        <item>Киселев Артем</item>
+        <item>Маркер Маркеров</item>
+    </string-array>
+    <string-array name="MyBestColors">
+        <item>#008577</item>
+        <item>#00547B</item>
+        <item>#d81B60</item>
+        <item>@color/info_background_color</item>
+        <item>@color/design_default_color_primary_dark</item>
+    </string-array>
+</resources>
