@@ -38,6 +38,7 @@ public class NewsFragment extends Fragment {
     private ProgressBar progressBar;
     private static boolean isFirstEnter = true;
     private boolean isAlreadyWork=false;
+    private final Object OWNER_ID = -113376999;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -54,6 +55,7 @@ public class NewsFragment extends Fragment {
     private ArrayList<String> newsText = new ArrayList<>();
     private ArrayList<String> imageURLs = new ArrayList<>();
     private ArrayList<String> newsDates = new ArrayList<>();
+    private ArrayList<String> postUrls = new ArrayList<>();
 
     public void vkRequest() {
 
@@ -69,7 +71,7 @@ public class NewsFragment extends Fragment {
         }
 
         isAlreadyWork = true;
-        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID,-113376999,VKApiConst.COUNT,20));
+        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID,OWNER_ID,VKApiConst.COUNT,20));
         System.out.println(request.toString());
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
@@ -101,9 +103,14 @@ public class NewsFragment extends Fragment {
                                 JSONObject photos = jsonObject1.getJSONObject("photo");
                                 String url = photos.getString("photo_807");
                                 imageURLs.add(url);
-                                String text = jsonObject.getString("text");
-                                newsText.add(text);
+                            } else {
+                                imageURLs.add("https://sun9-68.userapi.com/c856020/v856020233/e5a3f/04f-Ds4jKKY.jpg");
                             }
+                            String text = jsonObject.getString("text");
+                            newsText.add(text);
+                            String post_id = jsonObject.getString("id");
+                            String postUrl = "https://vk.com/wall"+OWNER_ID+"_"+post_id;
+                            postUrls.add(postUrl);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -117,6 +124,8 @@ public class NewsFragment extends Fragment {
                     OurData.imgUrls = imageURLs.toArray(OurData.imgUrls);
                     OurData.dates = new String[newsDates.size()];
                     OurData.dates = newsDates.toArray(OurData.dates);
+                    OurData.urlsForPost = new String[postUrls.size()];
+                    OurData.urlsForPost = postUrls.toArray(OurData.urlsForPost);
 
                     NewsListAdapter newsListAdapter = new NewsListAdapter();
                     recyclerView.setAdapter(newsListAdapter);
@@ -138,12 +147,12 @@ public class NewsFragment extends Fragment {
         collapsingToolbar.setTitle(title);
     }
 
+
     @Override
-    public void onPause() {
+    public void onDestroyView() {
         OurData.dates = null;
         OurData.imgUrls = null;
         OurData.title = null;
-
-        super.onPause();
+        super.onDestroyView();
     }
 }

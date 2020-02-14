@@ -1,6 +1,7 @@
 package com.coistem.stemdiary;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ortiz.touchview.TouchImageView;
 import com.squareup.picasso.Picasso;
 
 public class NewsListAdapter extends RecyclerView.Adapter {
@@ -37,6 +39,7 @@ public class NewsListAdapter extends RecyclerView.Adapter {
         private TextView itemTextView;
         private ImageView itemImageView;
         private TextView itemDateView;
+        private int position;
 
         public ListViewHolder(View itemView) {
             super(itemView);
@@ -44,11 +47,20 @@ public class NewsListAdapter extends RecyclerView.Adapter {
             itemImageView = (ImageView) itemView.findViewById(R.id.newsImage);
             itemDateView = (TextView) itemView.findViewById(R.id.newsDate);
             itemView.setOnClickListener(this);
+            itemImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ImageActivity.class);
+                    ImageActivity.image = OurData.imgUrls[position];
+                    v.getContext().startActivity(intent);
+                }
+            });
         }
         public void bindView(int position) {
             itemTextView.setText(OurData.title[position]);
             Picasso.with(itemView.getContext()).load(OurData.imgUrls[position]).error(R.drawable.ic_example_avatar).into(itemImageView);
             itemDateView.setText(OurData.dates[position]);
+            this.position = position;
         }
 
         public void onClick(View view) {
@@ -58,6 +70,10 @@ public class NewsListAdapter extends RecyclerView.Adapter {
                 Uri address = Uri.parse("https://vk.com/coistem");
                 Intent openLinkIntent = new Intent(Intent.ACTION_VIEW, address);
                 view.getContext().startActivity(openLinkIntent);
+            } else {
+                Uri postUrl = Uri.parse(OurData.urlsForPost[position]);
+                Intent openPostLink = new Intent(Intent.ACTION_VIEW, postUrl);
+                view.getContext().startActivity(openPostLink);
             }
         }
     }

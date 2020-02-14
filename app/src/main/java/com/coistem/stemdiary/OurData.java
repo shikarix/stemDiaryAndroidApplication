@@ -23,6 +23,8 @@ public class OurData {
     public static String[] itemNames;
     public static String[] itemImageUrls;
 
+    public static String[] urlsForPost;
+
 
 
 }

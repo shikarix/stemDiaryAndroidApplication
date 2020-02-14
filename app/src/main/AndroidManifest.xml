@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/CustomTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AddingTimetableActivity"></activity>
+        <activity android:name=".ImageActivity"
+            android:theme="@style/AppFullScreenTheme"></activity>
+        <activity android:name=".AddingTimetableActivity" />
         <activity android:name=".VKApiExpirementsActivity" />
         <activity
             android:name="com.vk.sdk.VKServiceActivity"

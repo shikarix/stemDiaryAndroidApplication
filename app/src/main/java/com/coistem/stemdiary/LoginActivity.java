@@ -132,6 +132,7 @@ public class LoginActivity extends AppCompatActivity{
             editor.putBoolean("isChecked",rememberBox.isChecked());
             editor.apply();
         }
+        finish();
     }
 
     private void connectToServer() {
@@ -211,15 +212,15 @@ public class LoginActivity extends AppCompatActivity{
 
             try {
                 CheckingConnection checkingConnection = new CheckingConnection();
-                sanyadebil = (Boolean) checkingConnection.execute(getBaseContext(), "https://www.coistem.com/").get();
+                sanyadebil = (Boolean) checkingConnection.execute(getBaseContext(), "https://vk.com/").get();
                 loadingDialog.cancel();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-//            String s = (sanyadebil ? "Online" : "Offline");
-//            Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
+            String s = (sanyadebil ? "Online" : "Offline");
+            Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
             if(sanyadebil) {
                 login = loginText.getText().toString();
                 password = passwordTxt.getText().toString();
