@@ -59,7 +59,9 @@ public class NewsListAdapter extends RecyclerView.Adapter {
         public void bindView(int position) {
             itemTextView.setText(OurData.title[position]);
             Picasso.with(itemView.getContext()).load(OurData.imgUrls[position]).error(R.drawable.ic_example_avatar).into(itemImageView);
-            itemDateView.setText(OurData.dates[position]);
+            String date = OurData.dates[position];
+            System.out.println();
+            itemDateView.setText(date);
             this.position = position;
         }
 

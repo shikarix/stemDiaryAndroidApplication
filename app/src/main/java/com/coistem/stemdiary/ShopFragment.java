@@ -45,23 +45,23 @@ public class ShopFragment extends Fragment {
     int runColor;
 
     private String jsonList = "{\t\"items\":[{\n" +
-            "  \"name\":\"Ослы самые отличные животные.\",\n" +
-            "  \"img\":\"http://zoogalaktika.ru/assets/img-cache/ass_01.dc0455fd11ca8728fc67ab6ad7351ae0.jpg\"\n" +
+            "  \"name\":\"Блокнот\",\n" +
+            "  \"img\":\"https://c7.hotpng.com/preview/90/753/217/5bb8ead5f0d90.jpg\"\n" +
             "},{\n" +
-            "  \"name\":\"Cамые лучшие на планете земля.\",\n" +
-            "  \"img\":\"https://ilike.pet/upload/iblock/768/768029221d01576d2bd705921c7dad99.jpg\"\n" +
+            "  \"name\":\"Футболка\",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/2014/1/619/w512h5121390853824tshirt512.png\"\n" +
             "},{\n" +
-            "  \"name\":\"У них очень крутые уши!\",\n" +
-            "  \"img\":\"https://ic.pics.livejournal.com/lev_dmitrich/32679866/221346/221346_original.jpg\"\n" +
+            "  \"name\":\"Стикер\",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/1012/SimplifiedApp/w513h5121350915237appicnsStickies.png\"\n" +
             "},{\n" +
-            "  \"name\":\"И зубы \uD83D\uDE02\",\n" +
-            "  \"img\":\"https://v-meste.ru/wp-content/uploads/2015/07/imageedit_106_3550651546.jpg\"\n" +
+            "  \"name\":\"Флешка \",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/2013/12/517/w512h5121386955459usb.png\"\n" +
             "},{\n" +
-            "  \"name\":\"Вот и все. Рассказ об ослах на этом закончен.\",\n" +
-            "  \"img\":\"https://heaclub.ru/tim/7cde4b61535988d8928923fab902e6b3.jpg\"\n" +
+            "  \"name\":\"Сумка\",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/2013/8/429/w256h2561377940402185103bagshoppingstreamline2.png\"\n" +
             "},{\n" +
-            "  \"name\":\"Удачи тебе :)\",\n" +
-            "  \"img\":\"https://novosti.az/media/2019/04/23/osel.jpg\"\n" +
+            "  \"name\":\"Бесплатное занятие\",\n" +
+            "  \"img\":\"https://c7.hotpng.com/preview/151/949/273/square-academic-cap-ico-graduation-ceremony-icon-mortarboard-cliparts.jpg\"\n" +
             "}]\n" +
             "  \n" +
             "}";

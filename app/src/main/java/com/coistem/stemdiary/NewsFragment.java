@@ -90,7 +90,7 @@ public class NewsFragment extends Fragment {
 
                     JSONArray items = response.json.getJSONObject("response").getJSONArray("items");
                     HashMap<String, Object> map = new HashMap<>();
-                    for(int i = 0; i<20; i++) {
+                    for(int i = 0; i<21; i++) {
                         try {
                             JSONObject jsonObject = items.getJSONObject(i);
                             JSONArray attachments = jsonObject.getJSONArray("attachments");
@@ -116,16 +116,17 @@ public class NewsFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
+                    newsDates.add("NOOOOOOOOB");
                     newsText.add("Большей новостей в нашей группе ВКонтакте!");
                     imageURLs.add("https://ic.pics.livejournal.com/lev_dmitrich/32679866/221346/221346_original.jpg");
                     OurData.title = new String[newsText.size()];
                     OurData.title = newsText.toArray(OurData.title);
                     OurData.imgUrls = new String[imageURLs.size()];
                     OurData.imgUrls = imageURLs.toArray(OurData.imgUrls);
-                    OurData.dates = new String[newsDates.size()];
-                    OurData.dates = newsDates.toArray(OurData.dates);
                     OurData.urlsForPost = new String[postUrls.size()];
                     OurData.urlsForPost = postUrls.toArray(OurData.urlsForPost);
+                    OurData.dates = new String[newsDates.size()];
+                    OurData.dates = newsDates.toArray(OurData.dates);
 
                     NewsListAdapter newsListAdapter = new NewsListAdapter();
                     recyclerView.setAdapter(newsListAdapter);
@@ -153,6 +154,7 @@ public class NewsFragment extends Fragment {
         OurData.dates = null;
         OurData.imgUrls = null;
         OurData.title = null;
+        OurData.urlsForPost = null;
         super.onDestroyView();
     }
 }

@@ -18,7 +18,7 @@ public class SimpleWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView webView, String url) {
         // все ссылки, в которых содержится 'javadevblog.com'
         // будут открываться внутри приложения
-        if (url.contains("192.168.1.100")) {
+        if (url.contains("18.191.156.108")) {
             return false;
         }
         // все остальные ссылки будут спрашивать какой браузер открывать

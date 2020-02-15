@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StemDiary</string>
+    <string name="exit_message">Press \"Back\" button again to exit.</string>
+    <string name="title_dashboard">Timetable</string>
+    <string name="title_home">News</string>
+    <string name="title_info">Info</string>
+    <string name="title_shop">Shop</string>
+</resources>
