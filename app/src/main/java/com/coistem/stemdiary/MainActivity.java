@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNewsVisible;
     private boolean isShopVisible;
     private boolean isModerationVisible;
+    public static String serverIp = "";
     public static String userLogin = "";
+    public static String userPassword = "";
     private int backClicks = 0;
     private static SharedPreferences sp;
 

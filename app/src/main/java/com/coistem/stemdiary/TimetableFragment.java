@@ -39,7 +39,7 @@ public class TimetableFragment extends Fragment {
         webView.setWebViewClient(webViewClient);
         webView.getSettings().setJavaScriptEnabled(true);
 //        webView.loadUrl("http://vk.com/coistem");
-        webView.loadUrl("http://18.191.156.108/timetableAndroid/0");
+        webView.loadUrl("http://"+MainActivity.serverIp+"/timetableAndroid/");
         return view;
     }
 }

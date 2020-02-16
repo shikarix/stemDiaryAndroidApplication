@@ -41,10 +41,11 @@ public class ShopFragment extends Fragment {
     private View view;
     public ImageView backgroundImg;
     private ImageView backgroundMaskImage;
+    public static TextView balanceTxt;
     float[] hsv;
     int runColor;
 
-    private String jsonList = "{\t\"items\":[{\n" +
+   /* private String jsonList = "{\t\"items\":[{\n" +
             "  \"name\":\"Блокнот\",\n" +
             "  \"img\":\"https://c7.hotpng.com/preview/90/753/217/5bb8ead5f0d90.jpg\"\n" +
             "},{\n" +
@@ -64,7 +65,7 @@ public class ShopFragment extends Fragment {
             "  \"img\":\"https://c7.hotpng.com/preview/151/949/273/square-academic-cap-ico-graduation-ceremony-icon-mortarboard-cliparts.jpg\"\n" +
             "}]\n" +
             "  \n" +
-            "}";
+            "}";*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,7 +74,7 @@ public class ShopFragment extends Fragment {
         shopList = view.findViewById(R.id.shopList);
         backgroundImg = view.findViewById(R.id.backgroundShopImage);
         backgroundMaskImage = view.findViewById(R.id.backgroundMaskShopImage);
-        TextView balanceTxt = view.findViewById(R.id.balanceText);
+        balanceTxt = view.findViewById(R.id.balanceText);
         balanceTxt.setText("Ваш баланс: "+GetUserInfo.userCounterCoins+" коинов");
         takeItems("fsddsfkdsf");
 //        Toast.makeText(getContext(), takeItems(GetUserInfo.userToken), Toast.LENGTH_SHORT).show();
@@ -97,6 +98,7 @@ public class ShopFragment extends Fragment {
 
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> imageURLs = new ArrayList<>();
+    private ArrayList<String> costs = new ArrayList<>();
 
     public void randomChangeColors() {
         int[][] colors = new int[5][3];
@@ -166,36 +168,52 @@ public class ShopFragment extends Fragment {
     }
 
     public String takeItems(String token) {
-//        SocketConnect socketConnect = new SocketConnect();
-//        socketConnect.execute("shop",token);
+        SocketConnect socketConnect = new SocketConnect();
+        String shop = "";
+        try {
+            shop = (String)socketConnect.execute("shop", token).get();
+            String[] databases = shop.split("Database");
+            shop = databases[1];
+            System.out.println(shop);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String o = null;
 //        try {
 //            o = (String) socketConnect.get(2, TimeUnit.SECONDS);
 //        } catch (ExecutionException | TimeoutException | InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        parseItems(jsonList);
+        parseItems(shop);
         return o;
     }
 
     private void parseItems(String jsonFile) {
         try {
             System.out.println(jsonFile);
-            JSONObject object = new JSONObject(jsonFile);
-            JSONArray items = object.getJSONArray("items");
-            for (int i = 0; i < 6; i++) {
+
+            JSONArray items = new JSONArray(jsonFile);
+            for (int i = 0; i < items.length(); i++) {
                 JSONObject jsonObject = items.getJSONObject(i);
-                String name = jsonObject.getString("name");
-                String img = jsonObject.getString("img");
+                String name = jsonObject.getString("title");
+                String img = jsonObject.getString("imgSrc");
+                String cost = jsonObject.getString("cost");
+                System.out.println(cost);
+                System.out.println(name);
+                System.out.println(img);
                 names.add(name);
                 imageURLs.add(img);
+                costs.add(cost);
             }
 
             OurData.itemNames = new String[names.size()];
             OurData.itemNames = names.toArray(OurData.itemNames);
             OurData.itemImageUrls = new String[imageURLs.size()];
             OurData.itemImageUrls = imageURLs.toArray(OurData.itemImageUrls);
-
+            OurData.itemCosts = new String[costs.size()];
+            OurData.itemCosts = costs.toArray(OurData.itemCosts);
 //            Toast.makeText(getContext(), "JSON Result. Name: "+name+" URL: "+img, Toast.LENGTH_SHORT).show();
 
         } catch (JSONException e) {

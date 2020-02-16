@@ -72,7 +72,7 @@ public class SocketConnect extends AsyncTask {
                 ps += pass[i];
             }
             System.out.println("LOGIN: "+lg+"PASSWORDDD: "+ps);
-            Document document = Jsoup.connect("http://18.191.156.108/database/"+lg+"/"+ps).get();
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/database/"+lg+"/"+ps).get();
             String text = document.text();
             String html = document.outerHtml();
             System.out.println(html);
@@ -86,7 +86,38 @@ public class SocketConnect extends AsyncTask {
         }
     }
 
+    public String purchaseSomething(int id) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/buy/"+id+"/"+MainActivity.userLogin+"/"+MainActivity.userPassword).get();
+            String text = document.text();
+            String html = document.outerHtml();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+
     public String takeShopItems(String token) {
+        try {
+            Document document = Jsoup.connect("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword).get();
+            String text = document.text();
+            String html = document.outerHtml();
+            System.out.println("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword);
+            System.out.println(text);
+            if(text.equals("Go daleko!")) {
+                return "Go daleko!";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 //        try {
 //            try {
 //                socket = new Socket("192.168.1.100", 45654);
@@ -136,6 +167,10 @@ public class SocketConnect extends AsyncTask {
             case "shop" : {
                  String getShopItems = takeShopItems((String) objects[1]);
                  return getShopItems;
+            }
+            case "purchase": {
+                String purchase = purchaseSomething((Integer) objects[1]);
+                return purchase;
             }
         }
         return "unknown command";

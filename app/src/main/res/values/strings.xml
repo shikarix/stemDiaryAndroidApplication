@@ -9,6 +9,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="exit_message" translatable="false">Нажмите кнопку \"Назад\" еще раз, чтобы выйти</string>
+    <string name="cost">Цена:</string>
     <string-array name="courses_names">
         <item>Программирование Java. Первый год.</item>
         <item>Программирование Java. Второй год</item>

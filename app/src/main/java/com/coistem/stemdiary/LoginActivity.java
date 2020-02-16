@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity{
     HashMap<String,String> accounts = new HashMap<>();
     private EditText loginText;
     private EditText passwordTxt;
+    private CheckBox isLocalServerBox;
     private AlertDialog.Builder loadingBuilder;
     public static AlertDialog loadingDialog;
     private AlertDialog loginErrorDialog;
@@ -54,6 +55,7 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         loginText = findViewById(R.id.loginText);
         passwordTxt = findViewById(R.id.pswTxt);
+        isLocalServerBox = findViewById(R.id.isLocalServerCheck);
         final Button signInButton = findViewById(R.id.loginInBtn);
         addAccounts(); // вносим аккаунты в бд
         sharedPreferences = getSharedPreferences("logins",MODE_PRIVATE);
@@ -136,6 +138,11 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     private void connectToServer() {
+        if(isLocalServerBox.isChecked()) {
+            MainActivity.serverIp = "192.168.1.106:8080";
+        } else {
+            MainActivity.serverIp = "18.191.156.108";
+        }
 //        CheckingConnection checkingConnection = new CheckingConnection();
         checkingConnectionTask = new CheckingConnectionTask();
         checkingConnectionTask.execute();
@@ -237,7 +244,11 @@ public class LoginActivity extends AppCompatActivity{
                         Toast.makeText(LoginActivity.this, "Пожалуйста, авторизуйтесь.", Toast.LENGTH_SHORT).show();
                         String[] scope = {VKScope.FRIENDS};
                         VKSdk.login(LoginActivity.this,scope);
+                        MainActivity.userLogin = login;
+                        MainActivity.userPassword = password;
                     } else {
+                        MainActivity.userLogin = login;
+                        MainActivity.userPassword = password;
                         logIn();
 
                     }
