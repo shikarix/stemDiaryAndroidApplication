@@ -89,9 +89,9 @@ public class AddingTimetableActivity extends Activity implements View.OnClickLis
             public void onClick(DialogInterface dialogInterface, int i) {
                 for (int ii = 0; ii < array.length; ii++) {
                     if (mCheckedItems[ii]) {
-                       list.add(array[ii]);
+                        list.add(array[ii]);
                     }
-             }
+                }
                 Toast.makeText(AddingTimetableActivity.this, list.toString(), Toast.LENGTH_SHORT).show();
                 selectStudentsDialog.cancel();
                 textUpdate();

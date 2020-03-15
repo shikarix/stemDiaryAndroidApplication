@@ -71,7 +71,7 @@ public class InfoFragment extends Fragment {
         Log.d("Server avatar url",GetUserInfo.avatarUrl);
         avatar.setBorderWidth(20);
         avatar.setBorderColor(Color.YELLOW);
-        Picasso.with(getContext()).load(GetUserInfo.avatarUrl).error(R.drawable.stem_logo).into(avatar);
+//        Picasso.with(getContext()).load(GetUserInfo.avatarUrl).error(R.drawable.stem_logo).into(avatar);
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

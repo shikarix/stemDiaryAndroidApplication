@@ -85,6 +85,41 @@ public class SocketConnect extends AsyncTask {
             return "Connection error";
         }
     }
+    public String getStudentInfo(String login) {
+        try {
+           Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getStemCoins/" + MainActivity.userLogin + "/" + MainActivity.userPassword + "/" + login).get();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else if(text.equals("Go daleko!")) {
+                return "User not found";
+            }  else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
+
+    public String getTeacherCourses() {
+        try {
+            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/courseGet/" + MainActivity.userLogin + "/" + MainActivity.userPassword).get();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else if(text.equals("Go daleko!")) {
+                return "Access error";
+            }  else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
 
     public String purchaseSomething(int id) {
         try {
@@ -171,6 +206,14 @@ public class SocketConnect extends AsyncTask {
             case "purchase": {
                 String purchase = purchaseSomething((Integer) objects[1]);
                 return purchase;
+            }
+            case "getStudentInfo" : {
+                String studentInfo = getStudentInfo((String) objects[1]);
+                return studentInfo;
+            }
+            case "getTeacherCourses": {
+                String teacherCourses = getTeacherCourses();
+                return teacherCourses;
             }
         }
         return "unknown command";
