@@ -72,7 +72,7 @@ public class SocketConnect extends AsyncTask {
                 ps += pass[i];
             }
             System.out.println("LOGIN: "+lg+"PASSWORDDD: "+ps);
-            Document document = Jsoup.connect("http://192.168.1.100:8080/database/"+lg+"/"+ps).get();
+            Document document = Jsoup.connect("http://18.191.156.108/database/"+lg+"/"+ps).get();
             String text = document.text();
             String html = document.outerHtml();
             System.out.println(html);
