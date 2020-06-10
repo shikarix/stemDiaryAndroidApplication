@@ -19,6 +19,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,30 +42,32 @@ public class ShopFragment extends Fragment {
     private View view;
     public ImageView backgroundImg;
     private ImageView backgroundMaskImage;
+    public static TextView balanceTxt;
+    private ProgressBar shopLoading;
     float[] hsv;
     int runColor;
 
-    private String jsonList = "{\t\"items\":[{\n" +
-            "  \"name\":\"Ослы самые отличные животные.\",\n" +
-            "  \"img\":\"http://zoogalaktika.ru/assets/img-cache/ass_01.dc0455fd11ca8728fc67ab6ad7351ae0.jpg\"\n" +
+   /* private String jsonList = "{\t\"items\":[{\n" +
+            "  \"name\":\"Блокнот\",\n" +
+            "  \"img\":\"https://c7.hotpng.com/preview/90/753/217/5bb8ead5f0d90.jpg\"\n" +
             "},{\n" +
-            "  \"name\":\"Cамые лучшие на планете земля.\",\n" +
-            "  \"img\":\"https://ilike.pet/upload/iblock/768/768029221d01576d2bd705921c7dad99.jpg\"\n" +
+            "  \"name\":\"Футболка\",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/2014/1/619/w512h5121390853824tshirt512.png\"\n" +
             "},{\n" +
-            "  \"name\":\"У них очень крутые уши!\",\n" +
-            "  \"img\":\"https://ic.pics.livejournal.com/lev_dmitrich/32679866/221346/221346_original.jpg\"\n" +
+            "  \"name\":\"Стикер\",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/1012/SimplifiedApp/w513h5121350915237appicnsStickies.png\"\n" +
             "},{\n" +
-            "  \"name\":\"И зубы \uD83D\uDE02\",\n" +
-            "  \"img\":\"https://v-meste.ru/wp-content/uploads/2015/07/imageedit_106_3550651546.jpg\"\n" +
+            "  \"name\":\"Флешка \",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/2013/12/517/w512h5121386955459usb.png\"\n" +
             "},{\n" +
-            "  \"name\":\"Вот и все. Рассказ об ослах на этом закончен.\",\n" +
-            "  \"img\":\"https://heaclub.ru/tim/7cde4b61535988d8928923fab902e6b3.jpg\"\n" +
+            "  \"name\":\"Сумка\",\n" +
+            "  \"img\":\"https://s1.iconbird.com/ico/2013/8/429/w256h2561377940402185103bagshoppingstreamline2.png\"\n" +
             "},{\n" +
-            "  \"name\":\"Удачи тебе :)\",\n" +
-            "  \"img\":\"https://novosti.az/media/2019/04/23/osel.jpg\"\n" +
+            "  \"name\":\"Бесплатное занятие\",\n" +
+            "  \"img\":\"https://c7.hotpng.com/preview/151/949/273/square-academic-cap-ico-graduation-ceremony-icon-mortarboard-cliparts.jpg\"\n" +
             "}]\n" +
             "  \n" +
-            "}";
+            "}";*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,9 +76,10 @@ public class ShopFragment extends Fragment {
         shopList = view.findViewById(R.id.shopList);
         backgroundImg = view.findViewById(R.id.backgroundShopImage);
         backgroundMaskImage = view.findViewById(R.id.backgroundMaskShopImage);
-        TextView balanceTxt = view.findViewById(R.id.balanceText);
+        balanceTxt = view.findViewById(R.id.balanceText);
         balanceTxt.setText("Ваш баланс: "+GetUserInfo.userCounterCoins+" коинов");
-        takeItems("fsddsfkdsf");
+        shopLoading = view.findViewById(R.id.shopProgressBar);
+
 //        Toast.makeText(getContext(), takeItems(GetUserInfo.userToken), Toast.LENGTH_SHORT).show();
 //        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 100);
 //        valueAnimator.setDuration(10);
@@ -97,6 +101,7 @@ public class ShopFragment extends Fragment {
 
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> imageURLs = new ArrayList<>();
+    private ArrayList<String> costs = new ArrayList<>();
 
     public void randomChangeColors() {
         int[][] colors = new int[5][3];
@@ -157,45 +162,74 @@ public class ShopFragment extends Fragment {
 
     @Override
     public void onResume() {
-        ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter();
-        shopList.setAdapter(shopItemsListAdapter);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        shopList.setLayoutManager(layoutManager);
+        shopLoading.setVisibility(View.VISIBLE);
         randomChangeColors();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                takeItems("fsddsfkdsf");
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter();
+                        shopList.setAdapter(shopItemsListAdapter);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                        shopList.setLayoutManager(layoutManager);
+                        shopLoading.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+        }).start();
         super.onResume();
     }
 
     public String takeItems(String token) {
-//        SocketConnect socketConnect = new SocketConnect();
-//        socketConnect.execute("shop",token);
+        SocketConnect socketConnect = new SocketConnect();
+        String shop = "";
+        try {
+            shop = (String)socketConnect.execute("shop", token).get();
+            String[] databases = shop.split("Database");
+            shop = databases[1];
+            System.out.println(shop);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String o = null;
 //        try {
 //            o = (String) socketConnect.get(2, TimeUnit.SECONDS);
 //        } catch (ExecutionException | TimeoutException | InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        parseItems(jsonList);
+        parseItems(shop);
         return o;
     }
 
     private void parseItems(String jsonFile) {
         try {
             System.out.println(jsonFile);
-            JSONObject object = new JSONObject(jsonFile);
-            JSONArray items = object.getJSONArray("items");
-            for (int i = 0; i < 6; i++) {
+
+            JSONArray items = new JSONArray(jsonFile);
+            for (int i = 0; i < items.length(); i++) {
                 JSONObject jsonObject = items.getJSONObject(i);
-                String name = jsonObject.getString("name");
-                String img = jsonObject.getString("img");
+                String name = jsonObject.getString("title");
+                String img = jsonObject.getString("imgSrc");
+                String cost = jsonObject.getString("cost");
+                System.out.println(cost);
+                System.out.println(name);
+                System.out.println(img);
                 names.add(name);
                 imageURLs.add(img);
+                costs.add(cost);
             }
 
             OurData.itemNames = new String[names.size()];
             OurData.itemNames = names.toArray(OurData.itemNames);
             OurData.itemImageUrls = new String[imageURLs.size()];
             OurData.itemImageUrls = imageURLs.toArray(OurData.itemImageUrls);
-
+            OurData.itemCosts = new String[costs.size()];
+            OurData.itemCosts = costs.toArray(OurData.itemCosts);
 //            Toast.makeText(getContext(), "JSON Result. Name: "+name+" URL: "+img, Toast.LENGTH_SHORT).show();
 
         } catch (JSONException e) {

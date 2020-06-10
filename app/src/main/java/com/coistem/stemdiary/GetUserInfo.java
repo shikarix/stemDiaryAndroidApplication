@@ -69,21 +69,26 @@ public class GetUserInfo {
 
     public void parseJSONFromServer(String jsonInput) {
         try {
-            String[] databases = jsonInput.split("Database");
+            String[] databases = jsonInput.split("Андроид ");
             jsonInput = databases[1];
-            char[] chars = jsonInput.toCharArray();
-            String str = "";
-            for (int i = 2; i < chars.length-1; i++) {
-                str+= chars[i];
-            }
-            jsonInput = str;
+//            char[] chars = jsonInput.toCharArray();
+//            String str = "";
+//            for (int i = 2; i < chars.length-1; i++) {
+//                str+= chars[i];
+//            }
+//            jsonInput = str;
             Log.d("Server JSON:",jsonInput);
             JSONObject userInfo = new JSONObject(jsonInput);
             avatarUrl = userInfo.getString("avatarUrl");
             userName = userInfo.getString("name");
-            userCoins = userInfo.getString("stemCoins");
+            userCoins = userInfo.getString("stemcoin");
             userSurname = userInfo.getString("surname");
-            userAccessType = userInfo.getString("accessType");
+            if(userInfo.getBoolean("teacher")) {
+                userAccessType = "TEACHER";
+            }
+            if (userInfo.getBoolean("admin")) {
+                userAccessType = "ADMIN";
+            }
 //            userToken = userInfo.getString("token");
             System.out.println(userAccessType);
             userCounterCoins = Integer.parseInt(userCoins);

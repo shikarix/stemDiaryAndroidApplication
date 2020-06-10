@@ -21,7 +21,7 @@
         android:layout_gravity="center_vertical"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart" />
 
-    <ImageView
+    <com.ortiz.touchview.TouchImageView
         android:id="@+id/newsImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

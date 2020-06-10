@@ -22,6 +22,14 @@ public class OurData {
 
     public static String[] itemNames;
     public static String[] itemImageUrls;
+    public static String[] itemCosts;
+
+    public static String[] courseNames;
+    public static String[] courseImageUrls;
+    public static String[] courseDates;
+    public static String[] courseTeachers;
+
+    public static String[] urlsForPost;
 
 
 

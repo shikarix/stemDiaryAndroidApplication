@@ -23,4 +23,14 @@
         <item name="android:textColor">#FFF</item>
     </style>
 
+    <style name="AppFullScreenTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:title">@string/calendar</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <!-- No backgrounds, titles or window float -->
+        <item name="android:windowBackground">@null</item>
+    </style>
+
 </resources>

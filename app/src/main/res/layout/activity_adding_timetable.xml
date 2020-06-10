@@ -17,12 +17,13 @@
 
     <Button
         android:id="@+id/setTimetableBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:text="УСТАНОВИТЬ"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/addingInfo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
     <Spinner
@@ -47,15 +48,13 @@
         app:layout_constraintTop_toBottomOf="@+id/courseSpinner" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/addingInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
         android:text="Курс: Программирование джава ляляля\nУченики: пумпумпумпумпумпумпумпумпуммммммм\nДата: 29.12.19"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/setTimetableBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

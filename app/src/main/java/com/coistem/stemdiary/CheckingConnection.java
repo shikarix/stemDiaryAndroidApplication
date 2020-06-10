@@ -23,6 +23,7 @@ public class CheckingConnection  extends AsyncTask {
                 urlc.setConnectTimeout(3000); //choose your own timeframe
                 urlc.setReadTimeout(4000); //choose your own timeframe
                 urlc.connect();
+                System.out.println(urlc.getResponseCode());
                 return (urlc.getResponseCode() == 200);
             } catch (IOException e)
             {

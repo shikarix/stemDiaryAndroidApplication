@@ -26,20 +26,21 @@ public class TimetableFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_timetable, container, false);
-        FloatingActionButton fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), AddingTimetableActivity.class);
-                startActivityForResult(intent, 123);
-            }
-        });
-        WebView webView = view.findViewById(R.id.webView);
-        SimpleWebViewClient webViewClient = new SimpleWebViewClient(getActivity());
-        webView.setWebViewClient(webViewClient);
-        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.loadUrl("http://vk.com/coistem");
-        webView.loadUrl("http://18.191.156.108/timetableAndroid/0");
+
+//        FloatingActionButton fab = view.findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), AddingTimetableActivity.class);
+//                startActivityForResult(intent, 123);
+//            }
+//        });
+//        WebView webView = view.findViewById(R.id.webView);
+//        SimpleWebViewClient webViewClient = new SimpleWebViewClient(getActivity());
+//        webView.setWebViewClient(webViewClient);
+//        webView.getSettings().setJavaScriptEnabled(true);
+////        webView.loadUrl("http://vk.com/coistem");
+//        webView.loadUrl("http://"+MainActivity.serverIp+"/timetable/");
         return view;
     }
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,10 +29,12 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class InfoFragment extends Fragment {
 
-    private ImageView avatar;
+    private CircleImageView avatar;
     private AlertDialog avatarUrlDialog;
     private AlertDialog.Builder avatarUrlBuilder;
 
@@ -40,7 +43,7 @@ public class InfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_info, container, false);
-        final ImageView avatar = view.findViewById(R.id.avatarImageView);
+        avatar = view.findViewById(R.id.avatarImageView);
         final EditText input = new EditText(getContext());
         Toast.makeText(getContext(), GetUserInfo.userToken, Toast.LENGTH_SHORT).show();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -66,7 +69,13 @@ public class InfoFragment extends Fragment {
         ;
         avatarUrlDialog = avatarUrlBuilder.create();
         Log.d("Server avatar url",GetUserInfo.avatarUrl);
-        Picasso.with(getContext()).load(GetUserInfo.avatarUrl).error(R.drawable.stem_logo).into(avatar);
+//        avatar.setBorderWidth(20);
+//        avatar.setBorderColor(Color.YELLOW);
+        if(GetUserInfo.avatarUrl.equals("")) {
+            Picasso.with(getContext()).load(R.drawable.stem_logo).error(R.drawable.stem_logo).into(avatar);
+        } else {
+            Picasso.with(getContext()).load(GetUserInfo.avatarUrl).error(R.drawable.stem_logo).into(avatar);
+        }
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

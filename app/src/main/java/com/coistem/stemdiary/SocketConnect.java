@@ -1,5 +1,6 @@
 package com.coistem.stemdiary;
 
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -18,17 +19,67 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 public class SocketConnect extends AsyncTask {
+
+    public static final String SHOP_ITEMS = "shop";
+    public static final String MAKE_PURCHASE = "purchase";
+    public static final String STUDENT_INFO = "getStudentInfo";
+    public static final String TEACHER_COURSES = "getTeacherCourses";
+    public static final String COURSE_LESSONS = "getCourseLessons";
+    public static final String LESSON_STUDENTS = "getLessonStudents";
+    public static final String SEND_RATE = "setStudentRate";
+
     private OnTaskComplete listener;
 
     public interface OnTaskComplete {
         void onTaskComplete();
     }
     public static String result;
-    private static DataInputStream dataInputStream;
-    private static DataOutputStream dos;
-    Socket socket;
 
-    public String authorizate(String login, String password){
+
+    private String coursesNames = "{\n" +
+            "  \"courses\":[\n" +
+            "  {\"courseName\":\"Course1\"},\n" +
+            "  {\"courseName\":\"Course2\"},\n" +
+            "  {\"courseName\":\"Course3\"},\n" +
+            "  {\"courseName\":\"Course4\"},\n" +
+            "  {\"courseName\":\"Course5\"},\n" +
+            "  {\"courseName\":\"noobourse\"}\n" +
+            "  ]\n" +
+            "}";
+
+    private String courseLessons1 = "{\n" +
+            "\t\"lessons\":[\n" +
+            "\t\t{\"lessonDate\":\"4.04.20\"},\n" +
+            "\t\t{\"lessonDate\":\"10.04.20\"},\n" +
+            "\t\t{\"lessonDate\":\"27.04.20\"}\n" +
+            "\t]\n" +
+            "}";
+    private String courseLessons2 = "{\n" +
+            "\t\"lessons\":[\n" +
+            "\t\t{\"lessonDate\":\"5.04.20\"},\n" +
+            "\t\t{\"lessonDate\":\"11.04.20\"},\n" +
+            "\t\t{\"lessonDate\":\"28.04.20\"}\n" +
+            "\t]\n" +
+            "}";
+
+    private String fourthAprilStudents = "{\n" +
+            "\t\"students\":[\n" +
+            "\t\t{\"studentName\":\"Alexey Vasiliev\"},\n" +
+            "\t\t{\"studentName\":\"Eryomin Vadim\"},\n" +
+            "\t\t{\"studentName\":\"Sannikov Andrey\"}\n" +
+            "\t]\n" +
+            "}";
+
+    private String fifthAprilStudents = "{\n" +
+            "\t\"students\":[\n" +
+            "\t\t{\"studentName\":\"Yura Yeliseenko\"},\n" +
+            "\t\t{\"studentName\":\"Elena Yeliseenko\"},\n" +
+            "\t\t{\"studentName\":\"Timur Romanov\"}\n" +
+            "\t]\n" +
+            "}";
+
+
+    private String authorizate(String login, String password){
 //        try {
 //            try {
 //                socket = new Socket("192.168.1.100", 45654);
@@ -72,7 +123,10 @@ public class SocketConnect extends AsyncTask {
                 ps += pass[i];
             }
             System.out.println("LOGIN: "+lg+"PASSWORDDD: "+ps);
-            Document document = Jsoup.connect("http://18.191.156.108/database/"+lg+"/"+ps).get();
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/androidLogin/")
+                    .data("login", login)
+                    .data("password", password)
+                    .post();
             String text = document.text();
             String html = document.outerHtml();
             System.out.println(html);
@@ -85,8 +139,128 @@ public class SocketConnect extends AsyncTask {
             return "Connection error";
         }
     }
+    private String getStudentInfo(String login) {
+        try {
+           Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getStemCoins/" + MainActivity.userLogin + "/" + MainActivity.userPassword + "/" + login).get();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else if(text.equals("Go daleko!")) {
+                return "User not found";
+            }  else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
 
-    public String takeShopItems(String token) {
+    private String getLessonStudents(String courseName) {
+        try {
+            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getLessonStudents/" + MainActivity.userLogin + "/" + MainActivity.userPassword + "/" + courseName).get();
+            String text = document.text();
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else if(text.equals("Go daleko!")) {
+                return "Access error";
+            }  else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
+
+    private String getCourseLessons(String courseName) {
+        try {
+            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getCourseLessons/" + MainActivity.userLogin + "/" + MainActivity.userPassword + "/" + courseName).get();
+            String text = document.text();
+            System.out.println(text);
+            if (text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else if (text.equals("Go daleko!")) {
+                return "User not found";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
+
+    private String getTeacherCourses() {
+        try {
+            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getTeacherCourses/" + MainActivity.userLogin + "/" + MainActivity.userPassword).get();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else if(text.equals("Go daleko!")) {
+                return "Access error";
+            }  else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
+
+    private String sendStudentRate(String courseName, String date, String student, int discRate, int progressRate, int addRate) {
+        try {
+            String[] split = student.split(" ");
+            String studentName = split[0];
+            String studentSurname = split[1];
+            String url = "http://"+MainActivity.serverIp+"/setStudentRate/"+MainActivity.userLogin+"/"+MainActivity.userPassword+"/"+courseName+"/"+date+"/"+studentName+"/"+studentSurname+"/"+discRate+"/"+progressRate+"/"+addRate;
+            Document document = Jsoup.connect(url).get();
+            System.out.println(url);
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+    private String purchaseSomething(int id) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/buy/"+id+"/"+MainActivity.userLogin+"/"+MainActivity.userPassword).get();
+            String text = document.text();
+            String html = document.outerHtml();
+            System.out.println(text);
+            if(text.equals("Что-то пошло не так...")) {
+                return "Connection error";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+
+    private String takeShopItems(String token) {
+        try {
+            Document document = Jsoup.connect("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword).get();
+            String text = document.text();
+            String html = document.outerHtml();
+            System.out.println("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword);
+            System.out.println(text);
+            if(text.equals("Go daleko!")) {
+                return "Go daleko!";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 //        try {
 //            try {
 //                socket = new Socket("192.168.1.100", 45654);
@@ -133,9 +307,26 @@ public class SocketConnect extends AsyncTask {
                 result = authorizate;
                 return authorizate;
             }
-            case "shop" : {
-                 String getShopItems = takeShopItems((String) objects[1]);
-                 return getShopItems;
+            case SHOP_ITEMS : {
+                return takeShopItems((String) objects[1]);
+            }
+            case MAKE_PURCHASE: {
+                return purchaseSomething((Integer) objects[1]);
+            }
+            case STUDENT_INFO : {
+                return getStudentInfo((String) objects[1]);
+            }
+            case TEACHER_COURSES: {
+                return getTeacherCourses();
+            }
+            case COURSE_LESSONS: {
+                return getCourseLessons((String) objects[1]);
+            }
+            case LESSON_STUDENTS: {
+                return getLessonStudents((String) objects[1]);
+            }
+            case SEND_RATE: {
+                return sendStudentRate((String) objects[1],(String) objects[2],(String) objects[3],(int) objects[4],(int) objects[5],(int) objects[6]);
             }
         }
         return "unknown command";

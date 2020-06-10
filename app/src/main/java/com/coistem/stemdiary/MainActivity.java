@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNewsVisible;
     private boolean isShopVisible;
     private boolean isModerationVisible;
+    public static String serverIp = "";
     public static String userLogin = "";
+    public static String userPassword = "";
     private int backClicks = 0;
     private static SharedPreferences sp;
 
@@ -158,22 +160,24 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.main_content, newsFragment);
-        fragmentTransaction.commit();
-
-
-        isTimeTableVisible = false;
-        isShopVisible = false;
-        isNewsVisible = true;
-        isModerationVisible = false;
-        isInfoVisible = false;
+        if(fragmentTransaction.isEmpty()) {
+            fragmentTransaction.add(R.id.main_content, newsFragment);
+            fragmentTransaction.commit();
+            isTimeTableVisible = false;
+            isShopVisible = false;
+            isNewsVisible = true;
+            isModerationVisible = false;
+            isInfoVisible = false;
+        }
 //
 //        GetUserInfo getUserInfo = new GetUserInfo();
 //        getUserInfo.prepareJsonFile(MainActivity.this,userLogin);
 
 
         if(!GetUserInfo.userAccessType.equals("ADMIN")) {
-            navView.getMenu().removeItem(R.id.navigation_moderation); //this toje offnut
+            if(!GetUserInfo.userAccessType.equals("TEACHER")) {
+                navView.getMenu().removeItem(R.id.navigation_moderation); //this toje offnut
+            }
         }
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 

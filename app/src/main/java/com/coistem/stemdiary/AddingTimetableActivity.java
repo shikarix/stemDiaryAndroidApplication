@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -24,7 +25,9 @@ public class AddingTimetableActivity extends Activity implements View.OnClickLis
     AlertDialog selectStudentsDialog;
     String selectedDate = "";
     String selectedCourse = "";
+    String selectedPupils = "";
     ArrayList<String> list = new ArrayList<>();
+    private TextView addingInfoTxt;
     public static final int ID_ERROR = -100;
     @Override
     public void onClick(View v) {
@@ -37,13 +40,17 @@ public class AddingTimetableActivity extends Activity implements View.OnClickLis
         Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
         finish();
     }
-
+    protected void textUpdate(){
+        selectedPupils = list.toString();
+        addingInfoTxt.setText("Курс: "+selectedCourse+"\nУченики: "+selectedPupils+"\nДата: "+selectedDate);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_adding_timetable);
         MaterialCalendarView calendarView = findViewById(R.id.calendarView);
         Spinner spinner = findViewById(R.id.courseSpinner);
+        addingInfoTxt = findViewById(R.id.addingInfo);
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
@@ -51,6 +58,7 @@ public class AddingTimetableActivity extends Activity implements View.OnClickLis
                 int month = date.getMonth();
                 int year = date.getYear();
                 selectedDate=""+day+'.'+month+'.'+year;
+                textUpdate();
             }
         });
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -58,6 +66,7 @@ public class AddingTimetableActivity extends Activity implements View.OnClickLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] stringArray = getResources().getStringArray(R.array.courses_names);
                 selectedCourse = stringArray[position];
+                textUpdate();
 //                Toast.makeText(getContext(), "Selected: "+stringArray[position], Toast.LENGTH_SHORT).show();
             }
 
@@ -80,11 +89,12 @@ public class AddingTimetableActivity extends Activity implements View.OnClickLis
             public void onClick(DialogInterface dialogInterface, int i) {
                 for (int ii = 0; ii < array.length; ii++) {
                     if (mCheckedItems[ii]) {
-                       list.add(array[ii]);
+                        list.add(array[ii]);
                     }
-             }
+                }
                 Toast.makeText(AddingTimetableActivity.this, list.toString(), Toast.LENGTH_SHORT).show();
                 selectStudentsDialog.cancel();
+                textUpdate();
             }
         });
         selectStudentsDialog = selectStudentsBuilder.create();
