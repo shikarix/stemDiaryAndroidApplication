@@ -27,6 +27,7 @@ public class SocketConnect extends AsyncTask {
     public static final String COURSE_LESSONS = "getCourseLessons";
     public static final String LESSON_STUDENTS = "getLessonStudents";
     public static final String SEND_RATE = "setStudentRate";
+    public static final String GET_COURSES = "getCourses";
 
     private OnTaskComplete listener;
 
@@ -151,6 +152,26 @@ public class SocketConnect extends AsyncTask {
             }  else {
                 return text;
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
+
+    private String getStudentCourses(String login, String password) {
+        try {
+            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getPupilCourses")
+                    .data("login", login)
+                    .data("password", password).post();
+            String text = document.text();
+            if (text.equals("Логин")) {
+                return "Access error";
+            } else if(text.equals("[]")) {
+                return "no courses";
+            } else {
+                return text;
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
             return "Connection error";
@@ -327,6 +348,9 @@ public class SocketConnect extends AsyncTask {
             }
             case SEND_RATE: {
                 return sendStudentRate((String) objects[1],(String) objects[2],(String) objects[3],(int) objects[4],(int) objects[5],(int) objects[6]);
+            }
+            case GET_COURSES: {
+                return getStudentCourses((String) objects[1], (String) objects[2]);
             }
         }
         return "unknown command";

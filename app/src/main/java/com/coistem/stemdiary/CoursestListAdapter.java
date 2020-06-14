@@ -1,9 +1,9 @@
 package com.coistem.stemdiary;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,9 +62,8 @@ public class CoursestListAdapter extends RecyclerView.Adapter {
         }
         public void bindView(int position) {
             courseTextView.setText(OurData.courseNames[position]);
-            Picasso.with(itemView.getContext()).load(OurData.courseImageUrls[position]).error(R.drawable.ic_example_avatar).into(courseImageView);
+            Picasso.with(itemView.getContext()).load(OurData.courseImageUrls[position]).error(R.drawable.stem_logo).into(courseImageView);
             String date = OurData.courseDates[position];
-            System.out.println();
             courseDateView.setText(date);
             courseTeacherTextView.setText(OurData.courseTeachers[position]);
             goToCourseButton.setOnClickListener(this);
@@ -72,7 +71,8 @@ public class CoursestListAdapter extends RecyclerView.Adapter {
         }
 
         public void onClick(View view) {
-            Toast.makeText(view.getContext(), "URA!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(view.getContext(), CourseActivity.class);
+            view.getContext().startActivity(intent);
         }
     }
 }

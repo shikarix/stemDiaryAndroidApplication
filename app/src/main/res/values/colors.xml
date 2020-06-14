@@ -3,8 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="backgroundColor">#121212</color>
-    <color name="info_background_color">@color/design_default_color_primary</color>
+    <color name="backgroundColor">#000</color>
+    <color name="nav_view_backgroundColor">#121212</color>
+    <color name="info_background_color">#3F51B5</color>
     <color name="colorText">#FFF</color>
+    <color name="coursesTextColor">@android:color/primary_text_light</color>
     <color name="greenButtonColor">#28a745</color>
 </resources>

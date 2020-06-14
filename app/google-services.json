@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "258986133273",
+    "firebase_url": "https://stemdiary-c137f.firebaseio.com",
+    "project_id": "stemdiary-c137f",
+    "storage_bucket": "stemdiary-c137f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258986133273:android:68644e476c7c65c4f7a788",
+        "android_client_info": {
+          "package_name": "com.coistem.stemdiary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258986133273-nvg8kqg2bbgnsstdvr0m209alkr82hvk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUqRkRJ96CSNXzjDYaiNbLe8Qfs01rBSs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258986133273-nvg8kqg2bbgnsstdvr0m209alkr82hvk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

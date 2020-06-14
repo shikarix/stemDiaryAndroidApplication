@@ -1,13 +1,8 @@
 package com.coistem.stemdiary;
 
-import android.app.Activity;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 

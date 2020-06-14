@@ -1,21 +1,29 @@
 package com.coistem.stemdiary;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vk.sdk.VKAccessToken;
@@ -30,12 +38,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends Activity {
 
     HashMap<String,String> accounts = new HashMap<>();
     private EditText loginText;
     private EditText passwordTxt;
-    private CheckBox isLocalServerBox;
     private AlertDialog.Builder loadingBuilder;
     public static AlertDialog loadingDialog;
     private AlertDialog loginErrorDialog;
@@ -48,25 +55,46 @@ public class LoginActivity extends AppCompatActivity{
     private String isSuccesfulLogin;
     private String login;
     private String password;
+    private ImageView showPassIcon;
     private CheckingConnectionTask checkingConnectionTask;
+    private boolean isPasswordShowing = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginText = findViewById(R.id.loginText);
         passwordTxt = findViewById(R.id.pswTxt);
-        isLocalServerBox = findViewById(R.id.isLocalServerCheck);
+//        isLocalServerBox = findViewById(R.id.isLocalServerCheck);
+        showPassIcon = findViewById(R.id.showPasswordView);
         final Button signInButton = findViewById(R.id.loginInBtn);
-        addAccounts(); // вносим аккаунты в бд
+
         sharedPreferences = getSharedPreferences("logins",MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
         String loginSP = sharedPreferences.getString("login", null);
         String passwordSP = sharedPreferences.getString("password", null);
+
         boolean isChecked = sharedPreferences.getBoolean("isChecked",false);
+
         rememberBox = findViewById(R.id.rememberCheck);
         rememberBox.setChecked(false);
 
-        errorConnectionBuilder = new AlertDialog.Builder(LoginActivity.this)
+        showPassIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isPasswordShowing) {
+                    showPassIcon.setImageResource(R.drawable.ic_dontshow_password);
+                    passwordTxt.setTransformationMethod(null);
+                } else {
+                    showPassIcon.setImageResource(R.drawable.ic_show_password_icon);
+                    passwordTxt.setTransformationMethod(new PasswordTransformationMethod());
+                }
+                isPasswordShowing = !isPasswordShowing;
+            }
+        });
+
+        errorConnectionBuilder = new AlertDialog.Builder(this)
                 .setMessage("Ошибка подключения к интернету.\nПроверьте подключение к интернету или повторите попытку позже.")
                 .setPositiveButton("обновить", new DialogInterface.OnClickListener() {
                     @Override
@@ -83,7 +111,7 @@ public class LoginActivity extends AppCompatActivity{
                     }
                 });
         errorConnectionDialog = errorConnectionBuilder.create();
-        loginErrorBuilder = new AlertDialog.Builder(LoginActivity.this)
+        loginErrorBuilder = new AlertDialog.Builder(this)
                 .setTitle("Ошибка авторизации")
                 .setMessage("Неверная комбинация логин/пароль")
                 .setPositiveButton("ОK", new DialogInterface.OnClickListener() {
@@ -94,33 +122,54 @@ public class LoginActivity extends AppCompatActivity{
                 });
         loginErrorDialog = loginErrorBuilder.create();
 
-        ProgressBar progressBar = new ProgressBar(LoginActivity.this);
+        ProgressBar progressBar = new ProgressBar(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         progressBar.setLayoutParams(lp);
 
-        loadingBuilder = new AlertDialog.Builder(LoginActivity.this)
+        loadingBuilder = new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setView(R.layout.pleasewaitdialog)
 //                .setView(progressBar)
                 .setMessage("Авторизируемся. Пожалуйста, подождите...");
         loadingDialog = loadingBuilder.create();
 
+        if(loginSP!=null && passwordSP!=null) {
+            login = loginSP;
+            password = passwordSP;
+            loginText.setText(loginSP);
+            passwordTxt.setText(passwordSP);
+            loadingDialog.show();
+            connectToServer();
+        }
+        passwordTxt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (passwordTxt.getText().length() > 0) {
+                    setVisibleShowPass();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                login = loginText.getText().toString();
+                password = passwordTxt.getText().toString();
                 loadingDialog.show();
                 connectToServer();
             }
         });
-
-        if(loginSP!=null && passwordSP!=null) {
-            loginText.setText(loginSP);
-            passwordTxt.setText(passwordSP);
-            signInButton.performClick();
-        }
 
     }
 
@@ -137,13 +186,22 @@ public class LoginActivity extends AppCompatActivity{
         finish();
     }
 
+    public void setVisibleShowPass() {
+        showPassIcon.animate()
+                .withStartAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        showPassIcon.setVisibility(View.VISIBLE);
+                    }
+                })
+                .alpha(1f)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setDuration(100)
+                .start();
+    }
+
     private void connectToServer() {
-        if(isLocalServerBox.isChecked()) {
-            MainActivity.serverIp = "192.168.1.106:8080";
-        } else {
-            MainActivity.serverIp = "18.191.156.108";
-        }
-//        CheckingConnection checkingConnection = new CheckingConnection();
+        MainActivity.serverIp = "18.191.156.108";
         checkingConnectionTask = new CheckingConnectionTask();
         checkingConnectionTask.execute();
     }
@@ -166,7 +224,7 @@ public class LoginActivity extends AppCompatActivity{
                 execute = "Connection error";
                 e.printStackTrace();
             }
-            if (execute.equalsIgnoreCase("Database \"Go daleko!\"")) {
+            if (execute.equalsIgnoreCase("Логин")) {
                 return "Go daleko!";
             } else if (execute.equals("Connection error")) {
                 return "Server Connection error";
@@ -219,7 +277,7 @@ public class LoginActivity extends AppCompatActivity{
 
             try {
                 CheckingConnection checkingConnection = new CheckingConnection();
-                sanyadebil = (Boolean) checkingConnection.execute(getBaseContext(), "https://vk.com/").get();
+                sanyadebil = (Boolean) checkingConnection.execute(LoginActivity.this, "https://vk.com/").get();
                 loadingDialog.cancel();
             } catch (ExecutionException e) {
                 e.printStackTrace();
@@ -229,8 +287,6 @@ public class LoginActivity extends AppCompatActivity{
             String s = (sanyadebil ? "Online" : "Offline");
             Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
             if(sanyadebil) {
-                login = loginText.getText().toString();
-                password = passwordTxt.getText().toString();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

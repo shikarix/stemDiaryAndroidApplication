@@ -85,11 +85,11 @@ public class GetUserInfo {
             userSurname = userInfo.getString("surname");
             if(userInfo.getBoolean("teacher")) {
                 userAccessType = "TEACHER";
-            }
-            if (userInfo.getBoolean("admin")) {
+            } else if (userInfo.getBoolean("admin")) {
                 userAccessType = "ADMIN";
+            } else {
+                userAccessType = "STUDENT";
             }
-//            userToken = userInfo.getString("token");
             System.out.println(userAccessType);
             userCounterCoins = Integer.parseInt(userCoins);
         } catch (JSONException e) {
