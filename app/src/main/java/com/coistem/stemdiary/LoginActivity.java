@@ -183,6 +183,8 @@ public class LoginActivity extends Activity {
             editor.putBoolean("isChecked",rememberBox.isChecked());
             editor.apply();
         }
+        editor.putBoolean("isChecked",rememberBox.isChecked());
+        editor.apply();
         finish();
     }
 
@@ -224,7 +226,7 @@ public class LoginActivity extends Activity {
                 execute = "Connection error";
                 e.printStackTrace();
             }
-            if (execute.equalsIgnoreCase("Логин")) {
+            if (execute.contains("Логин")) {
                 return "Go daleko!";
             } else if (execute.equals("Connection error")) {
                 return "Server Connection error";
@@ -284,8 +286,6 @@ public class LoginActivity extends Activity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String s = (sanyadebil ? "Online" : "Offline");
-            Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
             if(sanyadebil) {
                 new Thread(new Runnable() {
                     @Override
@@ -311,7 +311,7 @@ public class LoginActivity extends Activity {
                 } else if(isSuccesfulLogin.equals("Go daleko!")) {
                     loginErrorDialog.show();
                 } else if(isSuccesfulLogin.equals("Server Connection error")) {
-                    Toast.makeText(LoginActivity.this, "Server connection error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "В настоящее время сервера недоступны. Повторите попытку позже.", Toast.LENGTH_SHORT).show();
                 }
 
             } else {

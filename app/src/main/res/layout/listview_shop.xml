@@ -2,61 +2,71 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/cv"
     android:layout_margin="5dp"
     card_view:cardCornerRadius="4dp"
     >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/shopBuyButton"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            >
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/greenButtonColor"
+            android:text="@string/buyButton"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="1.0"
+            card_view:layout_constraintStart_toEndOf="@+id/shopItemCost"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/shopItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Футболка"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toEndOf="@+id/cardView"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/icon"
-                android:layout_width="76dp"
-                android:layout_height="76dp"
-                android:scaleType="centerCrop"
+                android:id="@+id/shopItemIcon"
+                android:layout_width="224px"
+                android:layout_height="224px"
                 card_view:srcCompat="@drawable/ic_warning" />
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/text1"
+            android:id="@+id/shopItemCost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="5dp"
-            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-            android:textColor="#000"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="16dp"
+            android:text="Цена: "
+            card_view:layout_constraintBottom_toBottomOf="@+id/shopItemName"
+            card_view:layout_constraintStart_toEndOf="@+id/shopItemName"
+            card_view:layout_constraintTop_toTopOf="@+id/shopItemName" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="60dp"
-            android:layout_gravity="right|center_vertical"
-            android:layout_margin="5dp"
-            android:alpha="0.2"
-            android:visibility="invisible" />
-
-        <TextView
-            android:id="@+id/cost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:lineSpacingExtra="8sp"
-            android:text="Цена: 100$"
-            android:textAlignment="textEnd"
-            android:textSize="14sp" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

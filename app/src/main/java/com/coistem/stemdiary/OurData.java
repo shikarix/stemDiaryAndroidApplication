@@ -19,17 +19,31 @@ public class OurData {
     public static  String[] title;
     public static String[] imgUrls;
     public static String[] dates;
+    public static String[] urlsForPost;
+
 
     public static String[] itemNames;
     public static String[] itemImageUrls;
     public static String[] itemCosts;
+    public static Integer[] itemIds;
 
     public static String[] courseNames;
     public static String[] courseImageUrls;
     public static String[] courseDates;
     public static String[] courseTeachers;
+    public static String[] courseTeachersAvatarUrls;
 
-    public static String[] urlsForPost;
+    public static Object[] homeworks;
+    public static String[] currentHomeworks;
+    public static Object[] lessonsDates;
+    public static String[] currentLessonsDates;
+
+    public static String[] coursePupilPagesNames;
+    public static String[] coursePupilPagesAvatarUrls;
+    public static String[] coursePupilPagesUrls;
+
+
+
 
 
 

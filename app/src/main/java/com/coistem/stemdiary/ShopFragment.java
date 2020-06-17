@@ -33,7 +33,8 @@ public class ShopFragment extends Fragment {
     float[] hsv;
     int runColor;
 
-private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"cost\":100}]";
+//    private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"cost\":100}]";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,6 +69,11 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> imageURLs = new ArrayList<>();
     private ArrayList<String> costs = new ArrayList<>();
+    private ArrayList<Integer> itemIds = new ArrayList<>();
+
+
+
+
 
     public void randomChangeColors() {
         int[][] colors = new int[5][3];
@@ -133,18 +139,19 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                takeItems("fsddsfkdsf");
-                parseItems(jsonList);
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter();
-                        shopList.setAdapter(shopItemsListAdapter);
-                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-                        shopList.setLayoutManager(layoutManager);
-                        shopLoading.setVisibility(View.INVISIBLE);
-                    }
-                });
+                takeItems("fsddsfkdsf");
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter();
+                            shopList.setAdapter(shopItemsListAdapter);
+                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                            shopList.setLayoutManager(layoutManager);
+                            shopLoading.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
             }
         }).start();
         super.onResume();
@@ -155,7 +162,7 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
         String shop = "";
         try {
             shop = (String)socketConnect.execute("shop", token).get();
-            String[] databases = shop.split("Database");
+            String[] databases = shop.split("Андроид ");
             shop = databases[1];
             System.out.println(shop);
         } catch (ExecutionException e) {
@@ -169,8 +176,8 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
 //        } catch (ExecutionException | TimeoutException | InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//        parseItems(shop);
-        parseItems(jsonList);
+        parseItems(shop);
+//        parseItems(jsonList);
         return o;
     }
 
@@ -182,14 +189,16 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
             for (int i = 0; i < items.length(); i++) {
                 JSONObject jsonObject = items.getJSONObject(i);
                 String name = jsonObject.getString("title");
-                String img = jsonObject.getString("imgSrc");
-                String cost = jsonObject.getString("cost");
+                String img = jsonObject.getString("avatarUrl");
+                Integer cost = jsonObject.getInt("cost");
+                Integer itemId = jsonObject.getInt("id");
                 System.out.println(cost);
                 System.out.println(name);
                 System.out.println(img);
+                itemIds.add(itemId);
                 names.add(name);
                 imageURLs.add(img);
-                costs.add(cost);
+                costs.add(cost.toString());
             }
 
             OurData.itemNames = new String[names.size()];
@@ -198,6 +207,8 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
             OurData.itemImageUrls = imageURLs.toArray(OurData.itemImageUrls);
             OurData.itemCosts = new String[costs.size()];
             OurData.itemCosts = costs.toArray(OurData.itemCosts);
+            OurData.itemIds = new Integer[itemIds.size()];
+            OurData.itemIds = itemIds.toArray(OurData.itemIds);
 //            Toast.makeText(getContext(), "JSON Result. Name: "+name+" URL: "+img, Toast.LENGTH_SHORT).show();
 
         } catch (JSONException e) {
@@ -209,6 +220,7 @@ private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"c
     public void onPause() {
         names.clear();
         imageURLs.clear();
+        costs.clear();
 
         super.onPause();
     }

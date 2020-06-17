@@ -6,4 +6,6 @@
     <string name="title_home">News</string>
     <string name="title_info">Info</string>
     <string name="title_shop">Shop</string>
+    <string name="cost">Cost:</string>
+    <string name="buyButton">Buy</string>
 </resources>

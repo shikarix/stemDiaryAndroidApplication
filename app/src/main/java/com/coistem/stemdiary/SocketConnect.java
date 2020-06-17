@@ -28,6 +28,7 @@ public class SocketConnect extends AsyncTask {
     public static final String LESSON_STUDENTS = "getLessonStudents";
     public static final String SEND_RATE = "setStudentRate";
     public static final String GET_COURSES = "getCourses";
+    public static final String GET_UNCONFIRMED_BASKET = "getUnconfBasket";
 
     private OnTaskComplete listener;
 
@@ -250,13 +251,38 @@ public class SocketConnect extends AsyncTask {
             return "Connection error";
         }
     }
-    private String purchaseSomething(int id) {
+
+    private String getUnconfirmedBasket() {
         try {
-            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/buy/"+id+"/"+MainActivity.userLogin+"/"+MainActivity.userPassword).get();
-            String text = document.text();
-            String html = document.outerHtml();
+            Document basket = Jsoup.connect("http://" + MainActivity.serverIp + "/getAllUnconfirmedBaskets").data("login", MainActivity.userLogin, "password", MainActivity.userPassword).post();
+            String text = basket.text();
             System.out.println(text);
-            if(text.equals("Что-то пошло не так...")) {
+            if(text.contains("Логин")) {
+                return "Connection error";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Connection error";
+        }
+    }
+
+    private String purchaseSomething(Integer id) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/buy/")
+                    .data("login", MainActivity.userLogin,
+                            "password",MainActivity.userPassword,
+                            "productId", id.toString()).post();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Not enough product!")) {
+                return "Not enough product!";
+            } else if(text.equals("Not enough money!")) {
+                return "Not enough money!";
+            } else if(text.equals("Good")) {
+                return "Good";
+            } else if(text.equals("Go daleko!")) {
                 return "Connection error";
             } else {
                 return text;
@@ -268,12 +294,11 @@ public class SocketConnect extends AsyncTask {
 
     private String takeShopItems(String token) {
         try {
-            Document document = Jsoup.connect("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword).get();
+            Document document = Jsoup.connect("http://"+ MainActivity.serverIp+"/getAllShop/").data("login",MainActivity.userLogin,"password", MainActivity.userPassword).post();
             String text = document.text();
-            String html = document.outerHtml();
-            System.out.println("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword);
+//            System.out.println("http://"+ MainActivity.serverIp+"/androidShop/"+MainActivity.userLogin+"/"+MainActivity.userPassword);
             System.out.println(text);
-            if(text.equals("Go daleko!")) {
+            if(text.equals("Логин")) {
                 return "Go daleko!";
             } else {
                 return text;
@@ -336,6 +361,9 @@ public class SocketConnect extends AsyncTask {
             }
             case STUDENT_INFO : {
                 return getStudentInfo((String) objects[1]);
+            }
+            case GET_UNCONFIRMED_BASKET: {
+                return getUnconfirmedBasket();
             }
             case TEACHER_COURSES: {
                 return getTeacherCourses();
