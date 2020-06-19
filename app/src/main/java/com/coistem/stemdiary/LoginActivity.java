@@ -226,7 +226,7 @@ public class LoginActivity extends Activity {
                 execute = "Connection error";
                 e.printStackTrace();
             }
-            if (execute.contains("Логин")) {
+            if (execute.equals(SocketConnect.GO_DALEKO)) {
                 return "Go daleko!";
             } else if (execute.equals("Connection error")) {
                 return "Server Connection error";

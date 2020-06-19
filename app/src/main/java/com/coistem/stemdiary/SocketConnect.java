@@ -29,6 +29,11 @@ public class SocketConnect extends AsyncTask {
     public static final String SEND_RATE = "setStudentRate";
     public static final String GET_COURSES = "getCourses";
     public static final String GET_UNCONFIRMED_BASKET = "getUnconfBasket";
+    public static final String GET_ALL_TEACHERS = "getAllTeachers";
+    public static final String GET_ALL_PUPILS = "getAllPupils";
+
+    public static final String GO_DALEKO = "Go daleko!";
+    public static final String CONNECTION_ERROR = "Connection error";
 
     private OnTaskComplete listener;
 
@@ -132,8 +137,10 @@ public class SocketConnect extends AsyncTask {
             String text = document.text();
             String html = document.outerHtml();
             System.out.println(html);
-            if(text.equals("Что-то пошло не так...")) {
-                return "Connection error";
+            String[] words = text.split("Андроид ");
+            text = words[1];
+            if(text.equals(SocketConnect.GO_DALEKO)) {
+                return GO_DALEKO;
             } else {
                 return text;
             }
@@ -141,6 +148,7 @@ public class SocketConnect extends AsyncTask {
             return "Connection error";
         }
     }
+
     private String getStudentInfo(String login) {
         try {
            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getStemCoins/" + MainActivity.userLogin + "/" + MainActivity.userPassword + "/" + login).get();
@@ -339,6 +347,45 @@ public class SocketConnect extends AsyncTask {
         return "error";
     }
 
+    private String takeAllTeachers() {
+        try {
+            Document allTeachers = Jsoup.connect("http://" + MainActivity.serverIp + "/getAllTeachers")
+                    .data("login", MainActivity.userLogin, "password", MainActivity.userPassword).get();
+            String text = allTeachers.text();
+            System.out.println(text);
+            if (text.contains("Логин ")) {
+                return GO_DALEKO;
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return CONNECTION_ERROR;
+        }
+    }
+//
+//    private String addCourse(String courseName, long date, String[] pupils, String teacherLogin, String imageUrl) {
+////        Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse")
+////                .data("login", MainActivity.userLogin, "password", MainActivity.userPassword,"name", courseName, "date",date,)
+//    }
+
+    private String takeAllPupils() {
+        try {
+            Document allTeachers = Jsoup.connect("http://" + MainActivity.serverIp + "/getAllPupils")
+                    .data("login", MainActivity.userLogin, "password", MainActivity.userPassword).post();
+            String text = allTeachers.text();
+            System.out.println(text);
+            if (text.contains("Логин ")) {
+                return GO_DALEKO;
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return CONNECTION_ERROR;
+        }
+    }
+
     @Override
     protected void onPreExecute() {
 //        LoginActivity.loadingDialog.show();
@@ -379,6 +426,12 @@ public class SocketConnect extends AsyncTask {
             }
             case GET_COURSES: {
                 return getStudentCourses((String) objects[1], (String) objects[2]);
+            }
+            case GET_ALL_TEACHERS: {
+                return takeAllTeachers();
+            }
+            case GET_ALL_PUPILS: {
+                return takeAllPupils();
             }
         }
         return "unknown command";

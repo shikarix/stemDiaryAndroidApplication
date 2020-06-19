@@ -80,7 +80,7 @@ public class InfoFragment extends Fragment {
                 })
         ;
         avatarUrlDialog = avatarUrlBuilder.create();
-        Log.d("Server avatar url",GetUserInfo.avatarUrl);
+//        Log.d("Server avatar url",GetUserInfo.avatarUrl);
 //        avatar.setBorderWidth(20);
 //        avatar.setBorderColor(Color.YELLOW);
         if(GetUserInfo.avatarUrl.equals("")) {

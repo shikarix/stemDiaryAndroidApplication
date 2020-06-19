@@ -69,8 +69,8 @@ public class GetUserInfo {
 
     public void parseJSONFromServer(String jsonInput) {
         try {
-            String[] databases = jsonInput.split("Андроид ");
-            jsonInput = databases[1];
+//            String[] databases = jsonInput.split("Андроид ");
+//            jsonInput = databases[1];
 //            char[] chars = jsonInput.toCharArray();
 //            String str = "";
 //            for (int i = 2; i < chars.length-1; i++) {

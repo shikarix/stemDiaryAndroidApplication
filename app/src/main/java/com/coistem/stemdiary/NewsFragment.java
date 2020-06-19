@@ -148,11 +148,11 @@ public class NewsFragment extends Fragment {
 
 
     @Override
-    public void onDestroyView() {
+    public void onStop() {
         OurData.dates = null;
         OurData.imgUrls = null;
         OurData.title = null;
         OurData.urlsForPost = null;
-        super.onDestroyView();
+        super.onStop();
     }
 }

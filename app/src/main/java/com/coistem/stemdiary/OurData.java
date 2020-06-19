@@ -42,6 +42,11 @@ public class OurData {
     public static String[] coursePupilPagesAvatarUrls;
     public static String[] coursePupilPagesUrls;
 
+    public static String[] teacherNames;
+    public static String[] teacherLogins;
+    public static String[] pupilsNames;
+    public static String[] pupilsLogins;
+    public static boolean[] pupilsIsSelected;
 
 
 
