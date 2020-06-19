@@ -1,5 +1,6 @@
 package com.coistem.stemdiary;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -46,6 +47,13 @@ public class TimetableFragment extends Fragment {
         if (GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER")) {
             fab.show();
         }
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AddingTimetableActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

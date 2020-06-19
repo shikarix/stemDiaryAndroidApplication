@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -44,7 +43,7 @@ public class CoursestListAdapter extends RecyclerView.Adapter {
 
         public ListViewHolder(View itemView) {
             super(itemView);
-            courseTextView = (TextView) itemView.findViewById(R.id.courseName);
+            courseTextView = (TextView) itemView.findViewById(R.id.courseListName);
             courseImageView = (ImageView) itemView.findViewById(R.id.courseImageView);
             courseDateView = (TextView) itemView.findViewById(R.id.nextLessonText);
             courseTeacherTextView = (TextView) itemView.findViewById(R.id.teacherNameText);
