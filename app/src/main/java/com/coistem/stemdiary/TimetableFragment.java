@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -62,9 +63,13 @@ public class TimetableFragment extends Fragment {
         String courses = "";
         try {
             courses = (String)socketConnect.execute(SocketConnect.GET_COURSES,log, pass).get();
-            String[] databases = courses.split("Андроид ");
-            courses = databases[1];
-            System.out.println(courses);
+            if(courses.equals(SocketConnect.CONNECTION_ERROR) || courses.equals(SocketConnect.GO_DALEKO)) {
+                Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+            } else {
+                String[] databases = courses.split("Андроид ");
+                courses = databases[1];
+                System.out.println(courses);
+            }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }

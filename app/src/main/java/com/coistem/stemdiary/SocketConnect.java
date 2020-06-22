@@ -6,6 +6,7 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -31,6 +32,7 @@ public class SocketConnect extends AsyncTask {
     public static final String GET_UNCONFIRMED_BASKET = "getUnconfBasket";
     public static final String GET_ALL_TEACHERS = "getAllTeachers";
     public static final String GET_ALL_PUPILS = "getAllPupils";
+    public static final String ADD_COURSE = "addCourse";
 
     public static final String GO_DALEKO = "Go daleko!";
     public static final String CONNECTION_ERROR = "Connection error";
@@ -363,11 +365,24 @@ public class SocketConnect extends AsyncTask {
             return CONNECTION_ERROR;
         }
     }
-//
-//    private String addCourse(String courseName, long date, String[] pupils, String teacherLogin, String imageUrl) {
-////        Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse")
-////                .data("login", MainActivity.userLogin, "password", MainActivity.userPassword,"name", courseName, "date",date,)
-//    }
+    private String addCourse(String courseName, Long date, String[] pupils, String teacherLogin, String imageUrl) {
+        Connection data = Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse").data("login", MainActivity.userLogin, "password", MainActivity.userPassword, "name", courseName, "date", date.toString(), "teacher", teacherLogin, "imgSrc", imageUrl);
+        for (int i = 0; i < pupils.length; i++) {
+            data.data("pupils", pupils[i]);
+        }
+        try {
+            Document document = data.post();
+            String text = document.text();
+            if (text.contains("Логин ")) {
+                return GO_DALEKO;
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return CONNECTION_ERROR;
+        }
+    }
 
     private String takeAllPupils() {
         try {
@@ -432,6 +447,9 @@ public class SocketConnect extends AsyncTask {
             }
             case GET_ALL_PUPILS: {
                 return takeAllPupils();
+            }
+            case ADD_COURSE: {
+                return addCourse((String) objects[1], (Long) objects[2], (String[]) objects[3], (String) objects[4], (String) objects[5]);
             }
         }
         return "unknown command";

@@ -1,6 +1,7 @@
 package com.coistem.stemdiary;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -13,6 +14,9 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +34,7 @@ public class ShopFragment extends Fragment {
     private ImageView backgroundMaskImage;
     public static TextView balanceTxt;
     private ProgressBar shopLoading;
+    private FloatingActionButton shoppingCartButton;
     float[] hsv;
     int runColor;
 
@@ -46,7 +51,8 @@ public class ShopFragment extends Fragment {
         balanceTxt = view.findViewById(R.id.balanceText);
         balanceTxt.setText("Ваш баланс: "+GetUserInfo.userCounterCoins+" коинов");
         shopLoading = view.findViewById(R.id.shopProgressBar);
-
+        shoppingCartButton = view.findViewById(R.id.shoppingcartButton);
+        shoppingCartButton.hide();
 //        Toast.makeText(getContext(), takeItems(GetUserInfo.userToken), Toast.LENGTH_SHORT).show();
 //        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 100);
 //        valueAnimator.setDuration(10);
@@ -140,11 +146,18 @@ public class ShopFragment extends Fragment {
             @Override
             public void run() {
                 takeItems("fsddsfkdsf");
+                getUnconfBasket();
                 if (getActivity()!=null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter();
+                            ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter(){
+                                @Override
+                                public void makePurchase(int itemId, Context context) {
+                                    super.makePurchase(itemId, context);
+                                    getUnconfBasket();
+                                }
+                            };
                             shopList.setAdapter(shopItemsListAdapter);
                             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
                             shopList.setLayoutManager(layoutManager);
@@ -155,6 +168,36 @@ public class ShopFragment extends Fragment {
             }
         }).start();
         super.onResume();
+    }
+
+    private void getUnconfBasket() {
+        SocketConnect socketConnect = new SocketConnect();
+        try {
+            String basket = (String) socketConnect.execute(SocketConnect.GET_UNCONFIRMED_BASKET).get();
+            if(!basket.equals(SocketConnect.GO_DALEKO) && !basket.equals(SocketConnect.CONNECTION_ERROR)) {
+                String[] databases = basket.split("Андроид ");
+                basket = databases[1];
+                if (basket.equals("[]")) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            shoppingCartButton.hide();
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            shoppingCartButton.show();
+                        }
+                    });
+                }
+            } else {
+                Toast.makeText(getContext(), "Возникла проблема при получении товаров из корзины.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public String takeItems(String token) {
@@ -214,6 +257,10 @@ public class ShopFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateCart() {
+        getUnconfBasket();
     }
 
     @Override

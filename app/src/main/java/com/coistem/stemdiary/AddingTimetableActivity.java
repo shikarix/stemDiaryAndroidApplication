@@ -219,6 +219,7 @@ public class AddingTimetableActivity extends AppCompatActivity {
     private void updateText(int y,int m,int d, int h, int min) {
         Date date = new Date(y, m, d, h, min);
         courseDate = date.getTime();
+        System.out.println(courseDate);
         dateText.setText("Выбранная дата: "+d+"."+m+"."+y+" | "+h+":"+min);
     }
 
@@ -231,6 +232,7 @@ public class AddingTimetableActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(AddingTimetableActivity.this, "ок норм сохраняем", Toast.LENGTH_SHORT).show();
+                        addCourse();
                     }
                 })
                 .setMessage("Так будет выглядить ваш курс. Сохранить?");
@@ -250,19 +252,41 @@ public class AddingTimetableActivity extends AppCompatActivity {
 
     private void addCourse() {
         SocketConnect socketConnect = new SocketConnect();
-        String teachers = (String) socketConnect.execute(SocketConnect.GET_ALL_TEACHERS).get();
-        if(teachers.equals(SocketConnect.CONNECTION_ERROR) || teachers.equals(SocketConnect.GO_DALEKO)) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(AddingTimetableActivity.this, "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+        try {
+            String result = (String) socketConnect.execute(SocketConnect.ADD_COURSE, courseName, courseDate, coursePupils, teacherLogin, courseImageUrl).get();
+            if(result.equals(SocketConnect.CONNECTION_ERROR) || result.equals(SocketConnect.GO_DALEKO)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(AddingTimetableActivity.this, "Возникла ошибка при добавлении курса.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            } else {
+                String[] words = result.split("Андроид ");
+                result = words[1];
+                if (result.equals("true")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(AddingTimetableActivity.this, "Курс успешно добавлен!", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(AddingTimetableActivity.this, "Возникла ошибка при добавлении курса.", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
                 }
-            });
-        } else {
-            String[] words = teachers.split("Андроид ");
-            teachers = words[1];
-            parseTeachers(teachers);
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
         }
+
     }
 
     private void takeTeachers() {
@@ -287,6 +311,8 @@ public class AddingTimetableActivity extends AppCompatActivity {
     }
 
     private void parseTeachers(String json) {
+        names = new ArrayList<>();
+        logins = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONArray(json);
             for (int i = 0; i < jsonArray.length(); i++) {

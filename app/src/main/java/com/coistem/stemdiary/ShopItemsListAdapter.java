@@ -85,8 +85,6 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
             } else if(execute.equals("Connection error")) {
                 Toast.makeText(context, "Произошла ошибка при совершении покупки. Повторите попытку позже.", Toast.LENGTH_SHORT).show();
             }
-            socketConnect = new SocketConnect();
-            socketConnect.execute(SocketConnect.GET_UNCONFIRMED_BASKET).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
