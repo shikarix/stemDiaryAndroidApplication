@@ -80,7 +80,7 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
     public void makePurchase(int itemId, Context context) {
         SocketConnect socketConnect = new SocketConnect();
         try {
-            String execute = (String) socketConnect.execute(SocketConnect.MAKE_PURCHASE, itemId).get();
+            String execute = (String) socketConnect.execute(SocketConnect.ACCEPT_PURCHASE, itemId).get();
             String[] databases = execute.split("Андроид ");
             execute = databases[1];
             if(execute.equals("Good")) {

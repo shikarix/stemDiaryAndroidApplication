@@ -48,6 +48,8 @@ public class ShopFragment extends Fragment {
 
     private AlertDialog cartDialog;
 
+    private String basket = null;
+
     float[] hsv;
     int runColor;
 
@@ -72,11 +74,11 @@ public class ShopFragment extends Fragment {
         shoppingCartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OurData.cartItemNames = new String[]{"Product 1", "Product 2", "Product 3", "Product 4"};
-                OurData.cartItemCosts = new String[]{"100", "200", "300", "400"};
-                OurData.cartItemImageUrls = new String[]{"something", "something", "something", "something"};
-                OurData.inWorkItemNames = new String[]{"Product 1"};
-                OurData.inWorkItemStatuses = new String[]{"Прочитано"};
+//                OurData.cartItemNames = new String[]{"Product 1", "Product 2", "Product 3", "Product 4"};
+//                OurData.cartItemCosts = new String[]{"100", "200", "300", "400"};
+//                OurData.cartItemImageUrls = new String[]{"something", "something", "something", "something"};
+                OurData.inWorkItemNames = new String[]{"Product 1", "T-Shirt M", "Memory stick", "Notebook"};
+                OurData.inWorkItemStatuses = new String[]{"Статус: Прочитано","Статус: Не прочитано", "Статус: Выполнено!", "Статус: Отказано"};
                 showCartDialog();
             }
         });
@@ -104,6 +106,10 @@ public class ShopFragment extends Fragment {
     private ArrayList<String> costs = new ArrayList<>();
     private ArrayList<Integer> itemIds = new ArrayList<>();
 
+    private ArrayList<String> cartItemNames = new ArrayList<>();
+    private ArrayList<Integer> cartItemIds = new ArrayList<>();
+    private ArrayList<String> cartItemCosts = new ArrayList<>();
+    private ArrayList<String> cartImageUrls = new ArrayList<>();
 
 
 
@@ -203,7 +209,7 @@ public class ShopFragment extends Fragment {
     private void getUnconfBasket() {
         SocketConnect socketConnect = new SocketConnect();
         try {
-            String basket = (String) socketConnect.execute(SocketConnect.GET_UNCONFIRMED_BASKET).get();
+            basket = (String) socketConnect.execute(SocketConnect.GET_UNCONFIRMED_BASKET).get();
             if(!basket.equals(SocketConnect.GO_DALEKO) && !basket.equals(SocketConnect.CONNECTION_ERROR)) {
                 String[] databases = basket.split("Андроид ");
                 basket = databases[1];
@@ -219,6 +225,7 @@ public class ShopFragment extends Fragment {
                         @Override
                         public void run() {
                             shoppingCartButton.show();
+                            parseUnconfBasket(basket);
                         }
                     });
                 }
@@ -235,6 +242,48 @@ public class ShopFragment extends Fragment {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void parseUnconfBasket(String json) {
+        cartImageUrls.clear();
+        cartItemNames.clear();
+        cartItemIds.clear();
+        cartItemCosts.clear();
+        try {
+            JSONArray jsonArray = new JSONArray(json);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String productName = jsonObject.getString("productName");
+                //add image from server
+                String imageUrl = "something";
+                Integer basketId = jsonObject.getInt("id");
+                Integer id = jsonObject.getInt("product");
+                String itemCost = "error";
+//                for (int j = 0; j < OurData.itemIds.length; j++) {
+//                    if (OurData.itemIds[j].equals(id)) {
+//                        itemCost = OurData.itemCosts[j];
+//                        imageUrl = OurData.itemImageUrls[j];
+//                    }
+//                }
+
+                cartItemNames.add(productName);
+                cartImageUrls.add(imageUrl);
+                cartItemIds.add(basketId);
+                cartItemCosts.add(itemCost);
+            }
+            OurData.cartItemIds = new Integer[cartItemIds.size()];
+            OurData.cartItemIds = cartItemIds.toArray(OurData.cartItemIds);
+            OurData.cartItemCosts = new String[cartItemCosts.size()];
+            OurData.cartItemCosts = cartItemCosts.toArray(OurData.cartItemCosts);
+            OurData.cartItemNames = new String[cartItemNames.size()];
+            OurData.cartItemNames = cartItemNames.toArray(OurData.cartItemNames);
+            OurData.cartItemImageUrls = new String[cartImageUrls.size()];
+            OurData.cartItemImageUrls = cartImageUrls.toArray(OurData.cartItemImageUrls);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void takeItems(String token) {
@@ -275,12 +324,12 @@ public class ShopFragment extends Fragment {
                     }
                 })
                 .setTitle("Ваша корзина:");
-//        RecyclerView cartItemsList = dialogView.findViewById(R.id.cartItemsList);
-//
-//        CartItemsAdapter cartItemsAdapter = new CartItemsAdapter(); // prepare recycleview for cart items
-//        cartItemsList.setAdapter(cartItemsAdapter);
-//        RecyclerView.LayoutManager lm = new LinearLayoutManager(getContext());
-//        cartItemsList.setLayoutManager(lm);
+        RecyclerView cartItemsList = dialogView.findViewById(R.id.cartItemsList);
+
+        CartItemsAdapter cartItemsAdapter = new CartItemsAdapter(); // prepare recycleview for cart items
+        cartItemsList.setAdapter(cartItemsAdapter);
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getContext());
+        cartItemsList.setLayoutManager(lm);
 
         RecyclerView inWorkItemsList = dialogView.findViewById(R.id.acceptedItemsList); // prepare recycleview for accepted items
         CartItemStatusAdapter cartItemStatusAdapter = new CartItemStatusAdapter();

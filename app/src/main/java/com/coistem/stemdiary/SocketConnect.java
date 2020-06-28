@@ -33,6 +33,7 @@ public class SocketConnect extends AsyncTask {
     public static final String GET_ALL_TEACHERS = "getAllTeachers";
     public static final String GET_ALL_PUPILS = "getAllPupils";
     public static final String ADD_COURSE = "addCourse";
+    public static final String ACCEPT_PURCHASE = "acceptPurchase";
 
     public static final String GO_DALEKO = "Go daleko!";
     public static final String CONNECTION_ERROR = "Connection error";
@@ -143,6 +144,28 @@ public class SocketConnect extends AsyncTask {
             text = words[1];
             if(text.equals(SocketConnect.GO_DALEKO)) {
                 return GO_DALEKO;
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+
+    private String acceptPurchase(String basketId) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/confirm/")
+                    .data("login", MainActivity.userLogin,
+                            "password",MainActivity.userPassword,
+                            "basketId", basketId).post();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Я хз!")) {
+                return "hz";
+            } else if(text.equals("Good")) {
+                return "Good";
+            } else if(text.equals("Go daleko!")) {
+                return "Connection error";
             } else {
                 return text;
             }
@@ -450,6 +473,9 @@ public class SocketConnect extends AsyncTask {
             }
             case ADD_COURSE: {
                 return addCourse((String) objects[1], (Long) objects[2], (String[]) objects[3], (String) objects[4], (String) objects[5]);
+            }
+            case ACCEPT_PURCHASE: {
+                return acceptPurchase((String) objects[1]);
             }
         }
         return "unknown command";
