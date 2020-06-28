@@ -21,11 +21,18 @@ public class OurData {
     public static String[] dates;
     public static String[] urlsForPost;
 
-
     public static String[] itemNames;
     public static String[] itemImageUrls;
     public static String[] itemCosts;
     public static Integer[] itemIds;
+
+    public static String[] cartItemNames;
+    public static String[] cartItemImageUrls;
+    public static String[] cartItemCosts;
+    public static Integer[] cartItemIds;
+
+    public static String[] inWorkItemStatuses;
+    public static String[] inWorkItemNames;
 
     public static String[] courseNames;
     public static String[] courseImageUrls;

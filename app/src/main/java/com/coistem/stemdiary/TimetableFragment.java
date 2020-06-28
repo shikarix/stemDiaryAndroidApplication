@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,7 +36,9 @@ public class TimetableFragment extends Fragment {
     private ArrayList<String[]> lessonDates = new ArrayList<>();
 
     private RecyclerView recyclerView;
+    private boolean isEmpty = true;
     private ProgressBar progressBar;
+    private TextView nothingText;
     private FloatingActionButton fab;
 
     @Override
@@ -55,6 +58,8 @@ public class TimetableFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        nothingText = view.findViewById(R.id.nothingInTimeTableText);
+        nothingText.setVisibility(View.INVISIBLE);
         return view;
     }
 
@@ -73,7 +78,17 @@ public class TimetableFragment extends Fragment {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        parseCourses(courses);
+        if (courses.equals("[]")) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    nothingText.setVisibility(View.VISIBLE);
+                }
+            });
+        } else {
+            isEmpty = false;
+            parseCourses(courses);
+        }
     }
 
     @Override
@@ -98,12 +113,16 @@ public class TimetableFragment extends Fragment {
                         public void run() {
                             progressBar.setVisibility(View.VISIBLE);
                             recyclerView.setVisibility(View.INVISIBLE);
-                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-                            recyclerView.setLayoutManager(layoutManager);
-                            CoursestListAdapter coursestListAdapter = new CoursestListAdapter();
-                            recyclerView.setAdapter(coursestListAdapter);
-                            progressBar.setVisibility(View.INVISIBLE);
-                            recyclerView.setVisibility(View.VISIBLE);
+                            if (!isEmpty) {
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                CoursestListAdapter coursestListAdapter = new CoursestListAdapter();
+                                recyclerView.setAdapter(coursestListAdapter);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                            } else {
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }
                         }
                     });
                 }

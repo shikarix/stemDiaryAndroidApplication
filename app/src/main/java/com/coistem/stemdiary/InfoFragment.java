@@ -57,7 +57,6 @@ public class InfoFragment extends Fragment {
         darkThemeSwitch.setOnClickListener(darkThemeSwitchListener);
         avatar = view.findViewById(R.id.teacherAvatarImage);
         final EditText input = new EditText(getContext());
-        Toast.makeText(getContext(), GetUserInfo.userToken, Toast.LENGTH_SHORT).show();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);

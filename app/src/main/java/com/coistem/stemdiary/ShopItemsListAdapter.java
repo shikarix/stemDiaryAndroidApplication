@@ -43,7 +43,7 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
         int length = OurData.itemNames.length;
         return length;
     }
-
+    
     private class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView itemTextView;
         private ImageView itemImageView;
@@ -55,8 +55,15 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
             itemTextView = (TextView) itemView.findViewById(R.id.shopItemName);
             itemImageView = (ImageView) itemView.findViewById(R.id.shopItemIcon);
             itemCostsView = (TextView) itemView.findViewById(R.id.shopItemCost);
-            itemBuyButton = (Button) itemView.findViewById(R.id.shopBuyButton);
-            itemBuyButton.setOnClickListener(this);
+//            itemBuyButton = (Button) itemView.findViewById(R.id.shopBuyButton);
+            itemView.setOnClickListener(this);
+//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    Toast.makeText(v.getContext(), "Оставшееся ", Toast.LENGTH_SHORT).show();
+//                    return false;
+//                }
+//            });
         }
         public void bindView(int position) {
             itemTextView.setText(OurData.itemNames[position]);
@@ -64,7 +71,7 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
             itemCostsView.setText("Цена: "+OurData.itemCosts[position]+"$");
             this.position = position;
         }
-
+        
         public void onClick(View view) {
             makePurchase(OurData.itemIds[position], view.getContext());
         }

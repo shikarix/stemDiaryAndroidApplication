@@ -28,7 +28,7 @@ public class NewsListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 20;
+        return OurData.title.length;
     }
 
 

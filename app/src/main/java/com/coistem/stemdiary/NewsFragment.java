@@ -25,12 +25,9 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class NewsFragment extends Fragment {
-
-    private static ArrayList<Map<String, Object>> news = new ArrayList<>();
     private View view;
     private static RecyclerView recyclerView;
     private ProgressBar progressBar;
@@ -114,9 +111,11 @@ public class NewsFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-                    newsDates.add("NOOOOOOOOB");
+                    newsDates.add("vk.com/coistem");
                     newsText.add("Большей новостей в нашей группе ВКонтакте!");
-                    imageURLs.add("https://ic.pics.livejournal.com/lev_dmitrich/32679866/221346/221346_original.jpg");
+                    imageURLs.add("https://sun9-68.userapi.com/c856020/v856020233/e5a3f/04f-Ds4jKKY.jpg");
+                    postUrls.add("https://vk.com/coistem");
+//                    imageURLs.add("https://ic.pics.livejournal.com/lev_dmitrich/32679866/221346/221346_original.jpg"); osel picture
                     OurData.title = new String[newsText.size()];
                     OurData.title = newsText.toArray(OurData.title);
                     OurData.imgUrls = new String[imageURLs.size()];
@@ -127,9 +126,9 @@ public class NewsFragment extends Fragment {
                     OurData.dates = newsDates.toArray(OurData.dates);
 
                     NewsListAdapter newsListAdapter = new NewsListAdapter();
-                    recyclerView.setAdapter(newsListAdapter);
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
                     recyclerView.setLayoutManager(layoutManager);
+                    recyclerView.setAdapter(newsListAdapter);
                     progressBar.setVisibility(View.INVISIBLE);
                 } catch (JSONException e) {
                     e.printStackTrace();
