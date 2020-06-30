@@ -25,6 +25,7 @@ public class OurData {
     public static String[] itemImageUrls;
     public static String[] itemCosts;
     public static Integer[] itemIds;
+    public static Integer[] itemCounts;
 
     public static String[] cartItemNames;
     public static String[] cartItemImageUrls;
@@ -54,9 +55,4 @@ public class OurData {
     public static String[] pupilsNames;
     public static String[] pupilsLogins;
     public static boolean[] pupilsIsSelected;
-
-
-
-
-
 }

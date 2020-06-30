@@ -42,16 +42,19 @@ public class ShopFragment extends Fragment {
     private TextView nothingInShopText;
 
     private boolean isEmpty = true;
+    private boolean isCartEmpty = true;
 
     private FloatingActionButton adminStatusCart;
     private FloatingActionButton shoppingCartButton;
 
     private AlertDialog cartDialog;
+    private AlertDialog pleaseWaitDialog;
 
     private String basket = null;
 
     float[] hsv;
     int runColor;
+    private boolean isConfirmedCartEmpty;
 
 //    private String jsonList = "[{\"title\":\"parashsa\",\"imgSrc\":\"something\",\"cost\":100}]";
 
@@ -77,11 +80,12 @@ public class ShopFragment extends Fragment {
 //                OurData.cartItemNames = new String[]{"Product 1", "Product 2", "Product 3", "Product 4"};
 //                OurData.cartItemCosts = new String[]{"100", "200", "300", "400"};
 //                OurData.cartItemImageUrls = new String[]{"something", "something", "something", "something"};
-                OurData.inWorkItemNames = new String[]{"Product 1", "T-Shirt M", "Memory stick", "Notebook"};
-                OurData.inWorkItemStatuses = new String[]{"Статус: Прочитано","Статус: Не прочитано", "Статус: Выполнено!", "Статус: Отказано"};
+//                OurData.inWorkItemNames = new String[]{"Product 1", "T-Shirt M", "Memory stick", "Notebook"};
+//                OurData.inWorkItemStatuses = new String[]{"Статус: Прочитано","Статус: Не прочитано", "Статус: Выполнено!", "Статус: Отказано"};
                 showCartDialog();
             }
         });
+        cartDialog = new AlertDialog.Builder(getContext()).create();
 //        Toast.makeText(getContext(), takeItems(GetUserInfo.userToken), Toast.LENGTH_SHORT).show();
 //        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 100);
 //        valueAnimator.setDuration(10);
@@ -98,6 +102,11 @@ public class ShopFragment extends Fragment {
 //        mask.setBackgroundColor(Color.rgb(101, 51,115));
 //        mask.setAlpha(0.3f);
 //        backgroundImg.setBackgroundColor(rgb);
+        pleaseWaitDialog = new AlertDialog.Builder(getContext())
+                .setTitle("Производим операцию...")
+                .setCancelable(false)
+                .setView(R.layout.pleasewaitdialog)
+                .create();
         return view;
     }
 
@@ -105,13 +114,15 @@ public class ShopFragment extends Fragment {
     private ArrayList<String> imageURLs = new ArrayList<>();
     private ArrayList<String> costs = new ArrayList<>();
     private ArrayList<Integer> itemIds = new ArrayList<>();
+    private ArrayList<Integer> counts = new ArrayList<>();
 
     private ArrayList<String> cartItemNames = new ArrayList<>();
     private ArrayList<Integer> cartItemIds = new ArrayList<>();
     private ArrayList<String> cartItemCosts = new ArrayList<>();
     private ArrayList<String> cartImageUrls = new ArrayList<>();
 
-
+    private ArrayList<String> inWorkItemNames = new ArrayList<>();
+    private ArrayList<String> inWorkItemStatuses = new ArrayList<>();
 
 
     public void randomChangeColors() {
@@ -173,61 +184,120 @@ public class ShopFragment extends Fragment {
 
     @Override
     public void onResume() {
-        shopLoading.setVisibility(View.VISIBLE);
-        nothingInShopText.setVisibility(View.INVISIBLE);
         randomChangeColors();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                takeItems("fsddsfkdsf");
-                getUnconfBasket();
-                if (getActivity()!=null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter(){
-                                @Override
-                                public void makePurchase(int itemId, Context context) {
-                                    super.makePurchase(itemId, context);
-                                    getUnconfBasket();
-                                }
-                            };
-                            if(!isEmpty) {
-                                shopList.setAdapter(shopItemsListAdapter);
-                                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(),2);
-                                shopList.setLayoutManager(layoutManager);
-                                shopLoading.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    });
-                }
+                updateAllShop();
             }
         }).start();
         super.onResume();
     }
 
+    private void updateAllShop() {
+        if(getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    cartDialog.dismiss();
+                    shopLoading.setVisibility(View.VISIBLE);
+                    nothingInShopText.setVisibility(View.INVISIBLE);
+                    shopList.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+        takeItems("fsddsfkdsf");
+        getUnconfBasket();
+        getConfirmedBasket();
+        if (getActivity()!=null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ShopItemsListAdapter shopItemsListAdapter = new ShopItemsListAdapter(){
+                        @Override
+                        public void makePurchase(int itemId, Context context) {
+                            super.makePurchase(itemId, context);
+                            updateAllShop();
+                        }
+                    };
+                    if(!isEmpty) {
+                        shopList.setVisibility(View.VISIBLE);
+                        shopList.setAdapter(shopItemsListAdapter);
+                        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(),2);
+                        shopList.setLayoutManager(layoutManager);
+                        shopLoading.setVisibility(View.INVISIBLE);
+                        shoppingCartButton.show();
+                    }
+                }
+            });
+        }
+    }
+
+    private void getConfirmedBasket() {
+        isConfirmedCartEmpty = true;
+        SocketConnect socketConnect = new SocketConnect();
+        try {
+            basket = (String) socketConnect.execute(SocketConnect.GET_CONFIRMED_BASKET).get();
+            if(!basket.equals(SocketConnect.CONNECTION_ERROR)) {
+                if (basket.equals(SocketConnect.GO_DALEKO)) {
+
+                } else {
+                    isConfirmedCartEmpty = false;
+                    String[] databases = basket.split("Андроид ");
+                    basket = databases[1];
+                    parseConfBasket(basket);
+                }
+            } else {
+                if (getActivity() !=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Возникла проблема при получении товаров из корзины.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void parseConfBasket(String json) {
+        inWorkItemNames.clear();
+        inWorkItemStatuses.clear();
+        try {
+            JSONArray jsonArray = new JSONArray(json);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String productName = jsonObject.getString("productName");
+                //add image from server
+                String status = jsonObject.getString("status");
+                inWorkItemNames.add(productName);
+                inWorkItemStatuses.add(status);
+            }
+            OurData.inWorkItemNames = new String[inWorkItemNames.size()];
+            OurData.inWorkItemNames = inWorkItemNames.toArray(OurData.inWorkItemNames);
+            OurData.inWorkItemStatuses = new String[inWorkItemStatuses.size()];
+            OurData.inWorkItemStatuses = inWorkItemStatuses.toArray(OurData.inWorkItemStatuses);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void getUnconfBasket() {
+        isCartEmpty = true;
         SocketConnect socketConnect = new SocketConnect();
         try {
             basket = (String) socketConnect.execute(SocketConnect.GET_UNCONFIRMED_BASKET).get();
-            if(!basket.equals(SocketConnect.GO_DALEKO) && !basket.equals(SocketConnect.CONNECTION_ERROR)) {
-                String[] databases = basket.split("Андроид ");
-                basket = databases[1];
-                if (basket.equals("[]")) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            shoppingCartButton.hide();
-                        }
-                    });
+            if(!basket.equals(SocketConnect.CONNECTION_ERROR)) {
+                if (basket.equals(SocketConnect.GO_DALEKO)) {
+
                 } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            shoppingCartButton.show();
-                            parseUnconfBasket(basket);
-                        }
-                    });
+                    isCartEmpty = false;
+                    String[] databases = basket.split("Андроид ");
+                    basket = databases[1];
+                    parseUnconfBasket(basket);
                 }
             } else {
                 if (getActivity() !=null) {
@@ -257,14 +327,16 @@ public class ShopFragment extends Fragment {
                 //add image from server
                 String imageUrl = "something";
                 Integer basketId = jsonObject.getInt("id");
-                Integer id = jsonObject.getInt("product");
+                int id = jsonObject.getInt("product");
                 String itemCost = "error";
-//                for (int j = 0; j < OurData.itemIds.length; j++) {
-//                    if (OurData.itemIds[j].equals(id)) {
-//                        itemCost = OurData.itemCosts[j];
+                for (int j = 0; j < OurData.itemIds.length; j++) {
+                    if (OurData.itemIds[j] == id) {
+                        System.out.println( OurData.itemCosts[j]);
+                        itemCost = OurData.itemCosts[j];
 //                        imageUrl = OurData.itemImageUrls[j];
-//                    }
-//                }
+                        break;
+                    }
+                }
 
                 cartItemNames.add(productName);
                 cartImageUrls.add(imageUrl);
@@ -287,28 +359,41 @@ public class ShopFragment extends Fragment {
     }
 
     public void takeItems(String token) {
+
         SocketConnect socketConnect = new SocketConnect();
-        String shop = "";
         try {
-            shop = (String)socketConnect.execute("shop", token).get();
-            String[] databases = shop.split("Андроид ");
-            shop = databases[1];
-            System.out.println(shop);
+            String shop = (String)socketConnect.execute("shop", token).get();
+            if(!shop.equals(SocketConnect.CONNECTION_ERROR)) {
+                String[] databases = shop.split("Андроид ");
+                shop = databases[1];
+                System.out.println(shop);
+                if (shop.equals("[]")) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            shopLoading.setVisibility(View.INVISIBLE);
+                            nothingInShopText.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    isEmpty = false;
+                    parseItems(shop);
+                }
+            } else {
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "При получении данных возникла ошибка", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        if(shop.equals("[]")) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    shopLoading.setVisibility(View.INVISIBLE);
-                    nothingInShopText.setVisibility(View.VISIBLE);
-                }
-            });
-        } else {
-            isEmpty = false;
-            parseItems(shop);
-        }
+
     }
 
     private void showCartDialog() {
@@ -324,13 +409,24 @@ public class ShopFragment extends Fragment {
                     }
                 })
                 .setTitle("Ваша корзина:");
+        TextView emptyCartText = dialogView.findViewById(R.id.emptyCartItems);
         RecyclerView cartItemsList = dialogView.findViewById(R.id.cartItemsList);
-
-        CartItemsAdapter cartItemsAdapter = new CartItemsAdapter(); // prepare recycleview for cart items
-        cartItemsList.setAdapter(cartItemsAdapter);
-        RecyclerView.LayoutManager lm = new LinearLayoutManager(getContext());
-        cartItemsList.setLayoutManager(lm);
-
+        if(isCartEmpty) {
+            emptyCartText.setVisibility(View.VISIBLE);
+        } else {
+            emptyCartText.setVisibility(View.INVISIBLE);
+            CartItemsAdapter cartItemsAdapter = new CartItemsAdapter(){
+                @Override
+                public void updateCart() {
+                    updateAllShop();
+                    cartDialog.dismiss();
+                    showCartDialog();
+                }
+            }; // prepare recycleview for cart items
+            cartItemsList.setAdapter(cartItemsAdapter);
+            RecyclerView.LayoutManager lm = new LinearLayoutManager(getContext());
+            cartItemsList.setLayoutManager(lm);
+        }
         RecyclerView inWorkItemsList = dialogView.findViewById(R.id.acceptedItemsList); // prepare recycleview for accepted items
         CartItemStatusAdapter cartItemStatusAdapter = new CartItemStatusAdapter();
         inWorkItemsList.setAdapter(cartItemStatusAdapter);
@@ -342,6 +438,11 @@ public class ShopFragment extends Fragment {
     }
 
     private void parseItems(String jsonFile) {
+        itemIds.clear();
+        names.clear();
+        imageURLs.clear();
+        costs.clear();
+        counts.clear();
         try {
             System.out.println(jsonFile);
 
@@ -352,6 +453,7 @@ public class ShopFragment extends Fragment {
                 String img = jsonObject.getString("avatarUrl");
                 Integer cost = jsonObject.getInt("cost");
                 Integer itemId = jsonObject.getInt("id");
+                Integer count = jsonObject.getInt("count");
                 System.out.println(cost);
                 System.out.println(name);
                 System.out.println(img);
@@ -359,6 +461,7 @@ public class ShopFragment extends Fragment {
                 names.add(name);
                 imageURLs.add(img);
                 costs.add(cost.toString());
+                counts.add(count);
             }
 
             OurData.itemNames = new String[names.size()];
@@ -369,7 +472,8 @@ public class ShopFragment extends Fragment {
             OurData.itemCosts = costs.toArray(OurData.itemCosts);
             OurData.itemIds = new Integer[itemIds.size()];
             OurData.itemIds = itemIds.toArray(OurData.itemIds);
-
+            OurData.itemCounts = new Integer[counts.size()];
+            OurData.itemCounts = counts.toArray(OurData.itemCounts);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -380,7 +484,8 @@ public class ShopFragment extends Fragment {
         names.clear();
         imageURLs.clear();
         costs.clear();
-
+        itemIds.clear();
+        counts.clear();
         super.onPause();
     }
 }

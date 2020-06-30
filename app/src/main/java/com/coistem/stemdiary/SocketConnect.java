@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeoutException;
 
 public class SocketConnect extends AsyncTask {
 
@@ -32,8 +34,10 @@ public class SocketConnect extends AsyncTask {
     public static final String GET_UNCONFIRMED_BASKET = "getUnconfBasket";
     public static final String GET_ALL_TEACHERS = "getAllTeachers";
     public static final String GET_ALL_PUPILS = "getAllPupils";
+    public static final String GET_CONFIRMED_BASKET = "getConfirmedBasket";
     public static final String ADD_COURSE = "addCourse";
     public static final String ACCEPT_PURCHASE = "acceptPurchase";
+    public static final String CANCEL_PURCHASE = "cancelPurchase";
 
     public static final String GO_DALEKO = "Go daleko!";
     public static final String CONNECTION_ERROR = "Connection error";
@@ -174,6 +178,30 @@ public class SocketConnect extends AsyncTask {
         }
     }
 
+    private String cancelPurchase(String basketId) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/decline/")
+                    .data("login", MainActivity.userLogin,
+                            "password",MainActivity.userPassword,
+                            "basketId", basketId).post();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Я хз!")) {
+                return "hz";
+            } else if (text.contains("Логин")) {
+                return CONNECTION_ERROR;
+            } else if(text.equals("Good")) {
+                return "Good";
+            } else if(text.equals("Go daleko!")) {
+                return "Connection error";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+
     private String getStudentInfo(String login) {
         try {
            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getStemCoins/" + MainActivity.userLogin + "/" + MainActivity.userPassword + "/" + login).get();
@@ -292,13 +320,33 @@ public class SocketConnect extends AsyncTask {
             System.out.println(text);
             if(text.contains("Логин")) {
                 return "Connection error";
-            } else {
+            } else if(text.contains("Nothing!")) {
+                return GO_DALEKO;
+            } else{
                 return text;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return "Connection error";
         }
+        return CONNECTION_ERROR;
+    }
+
+    private String getConfirmedBasket() {
+        try {
+            Document basket = Jsoup.connect("http://" + MainActivity.serverIp + "/getAllConfirmedBaskets").data("login", MainActivity.userLogin, "password", MainActivity.userPassword).post();
+            String text = basket.text();
+            System.out.println(text);
+            if(text.contains("Логин")) {
+                return "Connection error";
+            } else if(text.contains("Nothing!")) {
+                return GO_DALEKO;
+            } else{
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return CONNECTION_ERROR;
     }
 
     private String purchaseSomething(Integer id) {
@@ -339,7 +387,7 @@ public class SocketConnect extends AsyncTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return CONNECTION_ERROR;
 //        try {
 //            try {
 //                socket = new Socket("192.168.1.100", 45654);
@@ -368,8 +416,6 @@ public class SocketConnect extends AsyncTask {
 //        } catch (NullPointerException e) {
 //            return "Connection error";
 //        }
-
-        return "error";
     }
 
     private String takeAllTeachers() {
@@ -476,6 +522,12 @@ public class SocketConnect extends AsyncTask {
             }
             case ACCEPT_PURCHASE: {
                 return acceptPurchase((String) objects[1]);
+            }
+            case CANCEL_PURCHASE: {
+                return cancelPurchase((String) objects[1]);
+            }
+            case GET_CONFIRMED_BASKET: {
+                return getConfirmedBasket();
             }
         }
         return "unknown command";

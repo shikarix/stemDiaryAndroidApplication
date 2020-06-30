@@ -69,25 +69,32 @@ public class TimetableFragment extends Fragment {
         try {
             courses = (String)socketConnect.execute(SocketConnect.GET_COURSES,log, pass).get();
             if(courses.equals(SocketConnect.CONNECTION_ERROR) || courses.equals(SocketConnect.GO_DALEKO)) {
-                Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+                if(getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             } else {
                 String[] databases = courses.split("Андроид ");
                 courses = databases[1];
                 System.out.println(courses);
+                if (courses.equals("[]")) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            nothingText.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    isEmpty = false;
+                    parseCourses(courses);
+                }
             }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        }
-        if (courses.equals("[]")) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    nothingText.setVisibility(View.VISIBLE);
-                }
-            });
-        } else {
-            isEmpty = false;
-            parseCourses(courses);
         }
     }
 

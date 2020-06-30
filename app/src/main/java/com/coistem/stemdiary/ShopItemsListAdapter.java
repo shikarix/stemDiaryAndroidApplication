@@ -48,27 +48,21 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
         private TextView itemTextView;
         private ImageView itemImageView;
         private TextView itemCostsView;
-        private Button itemBuyButton;
+        private TextView itemCountsView;
         private int position;
         public ListViewHolder(View itemView) {
             super(itemView);
             itemTextView = (TextView) itemView.findViewById(R.id.shopItemName);
             itemImageView = (ImageView) itemView.findViewById(R.id.shopItemIcon);
             itemCostsView = (TextView) itemView.findViewById(R.id.shopItemCost);
-//            itemBuyButton = (Button) itemView.findViewById(R.id.shopBuyButton);
+            itemCountsView = (TextView) itemView.findViewById(R.id.shopCountText);
             itemView.setOnClickListener(this);
-//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    Toast.makeText(v.getContext(), "Оставшееся ", Toast.LENGTH_SHORT).show();
-//                    return false;
-//                }
-//            });
         }
         public void bindView(int position) {
             itemTextView.setText(OurData.itemNames[position]);
             Picasso.with(itemView.getContext()).load(OurData.itemImageUrls[position]).error(R.drawable.ic_example_avatar).into(itemImageView);
             itemCostsView.setText("Цена: "+OurData.itemCosts[position]+"$");
+            itemCountsView.setText("Остаток: "+OurData.itemCounts[position].toString()+" шт.");
             this.position = position;
         }
         
@@ -80,7 +74,7 @@ public class ShopItemsListAdapter extends RecyclerView.Adapter {
     public void makePurchase(int itemId, Context context) {
         SocketConnect socketConnect = new SocketConnect();
         try {
-            String execute = (String) socketConnect.execute(SocketConnect.ACCEPT_PURCHASE, itemId).get();
+            String execute = (String) socketConnect.execute(SocketConnect.MAKE_PURCHASE, itemId).get();
             String[] databases = execute.split("Андроид ");
             execute = databases[1];
             if(execute.equals("Good")) {

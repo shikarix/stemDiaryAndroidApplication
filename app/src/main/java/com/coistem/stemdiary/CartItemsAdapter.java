@@ -25,8 +25,6 @@ public class CartItemsAdapter extends RecyclerView.Adapter {
     private Button cartAcceptButton;
     private Button cartCancelButton;
 
-    public static int position;
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -44,11 +42,11 @@ public class CartItemsAdapter extends RecyclerView.Adapter {
         return OurData.cartItemNames.length;
     }
 
+    public void updateCart() {
 
-    private class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    }
 
-        private int position;
-        private int whichOperaion = -1;
+    private class ListViewHolder extends RecyclerView.ViewHolder {
 
         public ListViewHolder(View itemView) {
             super(itemView);
@@ -60,24 +58,31 @@ public class CartItemsAdapter extends RecyclerView.Adapter {
 
         }
 
-        public void bindView(int position) {
-            CartItemsAdapter.position = position;
+        public void bindView(final int position) {
             cartItemName.setText(OurData.cartItemNames[position]);
             cartItemCost.setText("Цена: " + OurData.cartItemCosts[position] + "$");
             Picasso.with(itemView.getContext()).load(OurData.cartItemImageUrls[position]).error(R.drawable.stem_logo).into(cartItemImage);
-            cartAcceptButton.setOnClickListener(this);
+            cartAcceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    acceptProduct(OurData.cartItemIds[position],v.getContext());
+                    updateCart();
+                }
+            });
             cartCancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "Ю прессед канкел баттон", Toast.LENGTH_SHORT).show();
+                    cancelProduct(OurData.cartItemIds[position], v.getContext());
+                    updateCart();
                 }
             });
+
         }
 
         private void acceptProduct(Integer itemId, Context context) {
             SocketConnect socketConnect = new SocketConnect();
             try {
-                String execute = (String) socketConnect.execute(SocketConnect.MAKE_PURCHASE, itemId.toString()).get();
+                String execute = (String) socketConnect.execute(SocketConnect.ACCEPT_PURCHASE, itemId.toString()).get();
                 String[] databases = execute.split("Андроид ");
                 execute = databases[1];
                 if (execute.equals("Good")) {
@@ -90,13 +95,25 @@ public class CartItemsAdapter extends RecyclerView.Adapter {
             }
         }
 
-        @Override
-        public void onClick(View v) {
-            if(whichOperaion == 0) {
-                acceptProduct(OurData.cartItemIds[position], v.getContext());
-            } else if (whichOperaion == 1) {
-//                Toast.makeText(v.getContext(), "", Toast.LENGTH_SHORT).show();
+        private void cancelProduct(Integer itemId, Context context) {
+            SocketConnect socketConnect = new SocketConnect();
+            try {
+                String execute = (String) socketConnect.execute(SocketConnect.CANCEL_PURCHASE, itemId.toString()).get();
+                if (!execute.equals(SocketConnect.CONNECTION_ERROR)) {
+                    String[] databases = execute.split("Андроид ");
+                    execute = databases[1];
+                    if (execute.equals("Good")) {
+                        Toast.makeText(context, "Покупка отклонена!", Toast.LENGTH_SHORT).show();
+                    } else if (execute.equals("Connection error")) {
+                        Toast.makeText(context, "Произошла ошибка. Повторите попытку позже.", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(context, "Произошла ошибка. Повторите попытку позже.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
         }
+
     }
 }
