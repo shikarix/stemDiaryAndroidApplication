@@ -71,11 +71,11 @@ public class TimetableFragment extends Fragment {
         return view;
     }
 
-    private void takeCourses(String log, String pass) {
+    private void takeCourses(String log, String pass, boolean isTeacher) {
         SocketConnect socketConnect = new SocketConnect();
         String courses = "";
         try {
-            courses = (String)socketConnect.execute(SocketConnect.GET_COURSES,log, pass).get();
+            courses = (String)socketConnect.execute(SocketConnect.GET_COURSES, log, pass, isTeacher).get();
             if(courses.equals(SocketConnect.CONNECTION_ERROR) || courses.equals(SocketConnect.GO_DALEKO)) {
                 if(getActivity()!=null) {
                     getActivity().runOnUiThread(new Runnable() {
@@ -98,7 +98,7 @@ public class TimetableFragment extends Fragment {
                     });
                 } else {
                     isEmpty = false;
-                    parseCourses(courses);
+                    parseCourses(courses, isTeacher);
                 }
             }
         } catch (ExecutionException | InterruptedException e) {
@@ -117,11 +117,19 @@ public class TimetableFragment extends Fragment {
 
     @Override
     public void onResume() {
+        if (GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER")) {
+            updateTeacherCourses();
+        } else {
+            updateStudentCourses();
+        }
+        super.onResume();
+    }
 
+    private void updateTeacherCourses() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                takeCourses(MainActivity.userLogin, MainActivity.userPassword);
+                takeCourses(MainActivity.userLogin, MainActivity.userPassword, true);
                 if (getActivity()!=null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -143,9 +151,34 @@ public class TimetableFragment extends Fragment {
                 }
             }
         }).start();
+    }
 
-
-        super.onResume();
+    private void updateStudentCourses() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                takeCourses(MainActivity.userLogin, MainActivity.userPassword, false);
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.INVISIBLE);
+                            if (!isEmpty) {
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                CoursestListAdapter coursestListAdapter = new CoursestListAdapter();
+                                recyclerView.setAdapter(coursestListAdapter);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                            } else {
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
     private String parseMark(JSONArray array) {
@@ -165,7 +198,7 @@ public class TimetableFragment extends Fragment {
         return "Not rated";
     }
 
-    private void parseCourses(String jsonFile) {
+    private void parseCourses(String jsonFile, boolean isTeacher) {
         OurData.courseDates = null;
         OurData.courseImageUrls = null;
         OurData.courseNames = null;
@@ -188,7 +221,6 @@ public class TimetableFragment extends Fragment {
             JSONArray jsonArray = new JSONArray(jsonFile);
             for (int i = 0; i < jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-
                 String courseName = jsonObject.getString("courseName");
                 String preDate = jsonObject.getString("preDate");
                 String date = jsonObject.getString("date");

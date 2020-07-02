@@ -83,35 +83,6 @@ public class SocketConnect extends AsyncTask {
 
 
     private String authorizate(String login, String password){
-//        try {
-//            try {
-//                socket = new Socket("192.168.1.100", 45654);
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-//                dataInputStream = new DataInputStream(socket.getInputStream());
-//                dos = new DataOutputStream(socket.getOutputStream());
-//                JSONObject jsonObject = new JSONObject();
-//                jsonObject.put("login",login);
-//                jsonObject.put("password",password);
-//                String s1 = jsonObject.toString();
-//                dos.writeUTF(s1);
-//                dos.flush();
-//                String s2 = dataInputStream.readUTF();
-//                Log.d("Server answer",s2);
-//                Log.d("Server input", s1);
-//                return s2;
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            } finally {
-//                dataInputStream.close();
-//                dos.close();
-//                socket.close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (NullPointerException e) {
-//            return "Connection error";
-//        }
-//        return "error";
         try {
             char[] log = login.toCharArray();
             String lg = "";
@@ -209,16 +180,22 @@ public class SocketConnect extends AsyncTask {
         }
     }
 
-    private String getStudentCourses(String login, String password) {
+    private String getStudentCourses(String login, String password, Boolean isTeacher) {
         try {
-            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getPupilCourses")
-                    .data("login", login)
-                    .data("password", password).post();
+            Document document = null;
+            if(!isTeacher) {
+                document = Jsoup.connect("http://" + MainActivity.serverIp + "/getPupilCourses")
+                        .data("login", login)
+                        .data("password", password).post();
+            } else {
+                document = Jsoup.connect("http://" + MainActivity.serverIp + "/getTeacherCourses")
+                        .data("login", login)
+                        .data("password", password).get();
+            }
             String text = document.text();
-            if (text.equals("Логин")) {
-                return "Access error";
-            } else if(text.equals("[]")) {
-                return "no courses";
+            System.out.println(text);
+            if (text.contains("Логин")) {
+                return GO_DALEKO;
             } else {
                 return text;
             }
@@ -377,34 +354,6 @@ public class SocketConnect extends AsyncTask {
             e.printStackTrace();
         }
         return CONNECTION_ERROR;
-//        try {
-//            try {
-//                socket = new Socket("192.168.1.100", 45654);
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-//                dataInputStream = new DataInputStream(socket.getInputStream());
-//                dos = new DataOutputStream(socket.getOutputStream());
-//                JSONObject jsonObject = new JSONObject();
-//                jsonObject.put("token", token);
-//                jsonObject.put("command","getShop");
-//                String s1 = jsonObject.toString();
-//                dos.writeUTF(s1);
-//                dos.flush();
-//                String s2 = dataInputStream.readUTF();
-//                Log.d("Server answer",s2);
-//                Log.d("Server input", s1);
-//                return s2;
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            } finally {
-//                dataInputStream.close();
-//                dos.close();
-//                socket.close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (NullPointerException e) {
-//            return "Connection error";
-//        }
     }
 
     private String takeAllTeachers() {
@@ -461,7 +410,6 @@ public class SocketConnect extends AsyncTask {
 
     @Override
     protected void onPreExecute() {
-//        LoginActivity.loadingDialog.show();
         super.onPreExecute();
     }
 
@@ -498,7 +446,7 @@ public class SocketConnect extends AsyncTask {
                 return sendStudentRate((String) objects[1],(String) objects[2],(String) objects[3],(int) objects[4],(int) objects[5],(int) objects[6]);
             }
             case GET_COURSES: {
-                return getStudentCourses((String) objects[1], (String) objects[2]);
+                return getStudentCourses((String) objects[1], (String) objects[2], (Boolean) objects[3]);
             }
             case GET_ALL_TEACHERS: {
                 return takeAllTeachers();
