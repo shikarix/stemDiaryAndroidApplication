@@ -45,6 +45,8 @@ public class OurData {
     public static String[] currentHomeworks;
     public static Object[] lessonsDates;
     public static String[] currentLessonsDates;
+    public static Object[] rates;
+    public static String[] currentRates;
 
     public static String[] coursePupilPagesNames;
     public static String[] coursePupilPagesAvatarUrls;

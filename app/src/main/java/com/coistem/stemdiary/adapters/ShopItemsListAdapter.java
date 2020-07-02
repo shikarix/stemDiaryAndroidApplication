@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.SocketConnect;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;

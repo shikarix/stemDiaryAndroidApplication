@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.fragments;
 
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
@@ -19,8 +19,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.SocketConnect;
+import com.coistem.stemdiary.adapters.CartItemStatusAdapter;
+import com.coistem.stemdiary.adapters.CartItemsAdapter;
+import com.coistem.stemdiary.adapters.ShopItemsListAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,7 +73,7 @@ public class ShopFragment extends Fragment {
         backgroundImg = view.findViewById(R.id.backgroundShopImage);
         backgroundMaskImage = view.findViewById(R.id.backgroundMaskShopImage);
         balanceTxt = view.findViewById(R.id.balanceText);
-        balanceTxt.setText("Ваш баланс: "+GetUserInfo.userCounterCoins+" коинов");
+        balanceTxt.setText("Ваш баланс: "+ GetUserInfo.userCounterCoins+" коинов");
         shopLoading = view.findViewById(R.id.shopProgressBar);
         adminStatusCart = view.findViewById(R.id.adminShopButton);
         adminStatusCart.hide();

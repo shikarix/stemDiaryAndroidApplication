@@ -1,17 +1,13 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.activities;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.FragmentManager;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,6 +21,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.SocketConnect;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
@@ -33,12 +32,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 public class AddingTimetableActivity extends AppCompatActivity {
@@ -61,7 +57,7 @@ public class AddingTimetableActivity extends AppCompatActivity {
     private String courseName;
     private String teacherLogin;
     private String teacherName;
-    private long courseDate;
+    private String courseDate;
     private String courseImageUrl = "";
     private String[] coursePupils;
 
@@ -216,11 +212,37 @@ public class AddingTimetableActivity extends AppCompatActivity {
         timepickerdialog.show();
     }
 
+    private String parseDate(Integer y, Integer m, Integer d, Integer h, Integer min) {
+        String year = "";
+        String month = "";
+        String day = "";
+        String hour = "";
+        String minute = "";
+        year = y.toString();
+        month = m.toString();
+        day = d.toString();
+        hour = h.toString();
+        minute = min.toString();
+
+        if(m<10) {
+            month = "0"+m.toString();
+        }
+        if(d<10) {
+            day = "0"+d.toString();
+        }
+        if(h<10) {
+            hour = "0"+d.toString();
+        }
+        if(min<10) {
+            minute = "0"+min.toString();
+        }
+        return day+"."+month+"."+year+" "+hour+":"+minute;
+    }
+
     private void updateText(int y,int m,int d, int h, int min) {
-        Date date = new Date(y, m, d, h, min);
-        courseDate = date.getTime();
+        courseDate = parseDate(y,m,d,h,min);
         System.out.println(courseDate);
-        dateText.setText("Выбранная дата: "+d+"."+m+"."+y+" | "+h+":"+min);
+        dateText.setText("Выбранная дата: "+courseDate);
     }
 
     private void createDialog() {
@@ -298,6 +320,7 @@ public class AddingTimetableActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(AddingTimetableActivity.this, "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
             } else {

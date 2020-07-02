@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.SocketConnect;
+import com.coistem.stemdiary.activities.AddingTimetableActivity;
+import com.coistem.stemdiary.activities.MainActivity;
+import com.coistem.stemdiary.adapters.CoursestListAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -34,6 +41,7 @@ public class TimetableFragment extends Fragment {
 
     private ArrayList<String[]> homeworks = new ArrayList<>();
     private ArrayList<String[]> lessonDates = new ArrayList<>();
+    private ArrayList<String[]> marks = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private boolean isEmpty = true;
@@ -140,15 +148,42 @@ public class TimetableFragment extends Fragment {
         super.onResume();
     }
 
+    private String parseMark(JSONArray array) {
+        try {
+            if (array.get(0) != null) {
+                ArrayList<Integer> marks = new ArrayList<>();
+                for (int j = 0; j < array.length(); j++) {
+                      marks.add(array.getInt(j));
+                }
+                return marks.get(0) + "," + marks.get(1) + "," + marks.get(2);
+            } else {
+                return "Not rated";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Not rated";
+    }
+
     private void parseCourses(String jsonFile) {
         OurData.courseDates = null;
         OurData.courseImageUrls = null;
         OurData.courseNames = null;
         OurData.courseTeachers = null;
+        OurData.lessonsDates = null;
+        OurData.currentLessonsDates = null;
+        OurData.homeworks = null;
+        OurData.currentHomeworks = null;
+        OurData.rates = null;
+        OurData.currentRates = null;
         courseImages.clear();
         courseTeachers.clear();
         courseNames.clear();
         courseDates.clear();
+        lessonDates.clear();
+        teacherAvatarUrls.clear();
+        homeworks.clear();
+        marks.clear();
         try {
             JSONArray jsonArray = new JSONArray(jsonFile);
             for (int i = 0; i < jsonArray.length(); i++){
@@ -166,6 +201,13 @@ public class TimetableFragment extends Fragment {
                 String homework = jsonObject.getString("homework");
                 String teacherAvatarUrl = jsonObject.getString("teacherAvatarUrl");
                 String[] homeworkk = new String[]{preHomework,homework,postHomework};
+                JSONArray preMark = jsonObject.getJSONArray("preMark");
+                JSONArray mark = jsonObject.getJSONArray("mark");
+                JSONArray postMark = jsonObject.getJSONArray("postMark");
+                String parsedPreMark = parseMark(preMark);
+                String parsedMark = parseMark(mark);
+                String parsedPostMark = parseMark(postMark);
+                marks.add(new String[]{parsedPreMark,parsedMark,parsedPostMark});
                 teacherAvatarUrls.add(teacherAvatarUrl);
                 lessonDates.add(dates);
                 homeworks.add(homeworkk);
@@ -188,7 +230,8 @@ public class TimetableFragment extends Fragment {
             OurData.lessonsDates = lessonDates.toArray();
             OurData.courseTeachersAvatarUrls = new String[teacherAvatarUrls.size()];
             OurData.courseTeachersAvatarUrls = teacherAvatarUrls.toArray(OurData.courseTeachersAvatarUrls);
-
+            OurData.rates = new Object[marks.size()];
+            OurData.rates = marks.toArray();
 
         } catch (JSONException e) {
             e.printStackTrace();

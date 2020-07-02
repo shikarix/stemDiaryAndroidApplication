@@ -1,9 +1,16 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import com.coistem.stemdiary.fragments.InfoFragment;
+import com.coistem.stemdiary.fragments.ModerationFragment;
+import com.coistem.stemdiary.fragments.NewsFragment;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.fragments.ShopFragment;
+import com.coistem.stemdiary.fragments.TimetableFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.fragment.app.FragmentManager;

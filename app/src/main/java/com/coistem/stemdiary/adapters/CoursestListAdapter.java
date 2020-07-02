@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.coistem.stemdiary.activities.CourseActivity;
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
 import com.squareup.picasso.Picasso;
 
 public class CoursestListAdapter extends RecyclerView.Adapter {
@@ -70,6 +73,7 @@ public class CoursestListAdapter extends RecyclerView.Adapter {
         }
 
         public void onClick(View view) {
+            OurData.currentRates = (String[]) OurData.rates[position];
             OurData.currentHomeworks = (String[]) OurData.homeworks[position];
             OurData.currentLessonsDates = (String[]) OurData.lessonsDates[position];
             CoursesPageViewAdapter.courseName = OurData.courseNames[position];

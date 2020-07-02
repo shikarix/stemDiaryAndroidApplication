@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.adapters;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.coistem.stemdiary.activities.ImageActivity;
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
 import com.squareup.picasso.Picasso;
 
 public class NewsListAdapter extends RecyclerView.Adapter {

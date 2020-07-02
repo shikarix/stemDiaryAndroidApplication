@@ -1,25 +1,14 @@
 package com.coistem.stemdiary;
 
-import android.app.AlertDialog;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.coistem.stemdiary.activities.MainActivity;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.TimeoutException;
 
 public class SocketConnect extends AsyncTask {
 
@@ -137,7 +126,7 @@ public class SocketConnect extends AsyncTask {
                 ps += pass[i];
             }
             System.out.println("LOGIN: "+lg+"PASSWORDDD: "+ps);
-            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/androidLogin/")
+            Document document = Jsoup.connect("http://"+ MainActivity.serverIp+"/androidLogin/")
                     .data("login", login)
                     .data("password", password)
                     .post();
@@ -434,8 +423,8 @@ public class SocketConnect extends AsyncTask {
             return CONNECTION_ERROR;
         }
     }
-    private String addCourse(String courseName, Long date, String[] pupils, String teacherLogin, String imageUrl) {
-        Connection data = Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse").data("login", MainActivity.userLogin, "password", MainActivity.userPassword, "name", courseName, "date", date.toString(), "teacher", teacherLogin, "imgSrc", imageUrl);
+    private String addCourse(String courseName, String date, String[] pupils, String teacherLogin, String imageUrl) {
+        Connection data = Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse").data("login", MainActivity.userLogin, "password", MainActivity.userPassword, "name", courseName, "date", date, "teacher", teacherLogin, "imgSrc", imageUrl);
         for (int i = 0; i < pupils.length; i++) {
             data.data("pupils", pupils[i]);
         }
@@ -518,7 +507,7 @@ public class SocketConnect extends AsyncTask {
                 return takeAllPupils();
             }
             case ADD_COURSE: {
-                return addCourse((String) objects[1], (Long) objects[2], (String[]) objects[3], (String) objects[4], (String) objects[5]);
+                return addCourse((String) objects[1], (String) objects[2], (String[]) objects[3], (String) objects[4], (String) objects[5]);
             }
             case ACCEPT_PURCHASE: {
                 return acceptPurchase((String) objects[1]);

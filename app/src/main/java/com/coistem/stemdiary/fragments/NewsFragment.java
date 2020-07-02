@@ -1,7 +1,12 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.fragments;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.adapters.NewsListAdapter;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
