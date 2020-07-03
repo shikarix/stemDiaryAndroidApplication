@@ -187,6 +187,7 @@ public class ShopFragment extends Fragment {
                                 }
                             };
                             if(!isEmpty) {
+                                оорлорл
                                 shopList.setAdapter(shopItemsListAdapter);
                                 RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(),2);
                                 shopList.setLayoutManager(layoutManager);
