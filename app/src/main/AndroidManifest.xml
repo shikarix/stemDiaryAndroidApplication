@@ -15,21 +15,22 @@
         android:supportsRtl="true"
         android:theme="@style/CustomTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CourseActivity"></activity>
+        <activity android:name=".activities.EditLessonActivity"></activity>
+        <activity android:name=".activities.CourseActivity" />
         <activity
-            android:name=".ImageActivity"
+            android:name=".activities.ImageActivity"
             android:theme="@style/AppFullScreenTheme" />
-        <activity android:name=".AddingTimetableActivity" />
-        <activity android:name=".VKApiExpirementsActivity" />
+        <activity android:name=".activities.AddingTimetableActivity" />
+        <activity android:name=".activities.VKApiExpirementsActivity" />
         <activity
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

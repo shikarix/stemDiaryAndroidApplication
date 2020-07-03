@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.SocketConnect;
+import com.coistem.stemdiary.activities.AddingTimetableActivity;
+import com.coistem.stemdiary.activities.MainActivity;
+import com.coistem.stemdiary.adapters.CoursestListAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -34,6 +41,7 @@ public class TimetableFragment extends Fragment {
 
     private ArrayList<String[]> homeworks = new ArrayList<>();
     private ArrayList<String[]> lessonDates = new ArrayList<>();
+    private ArrayList<String[]> marks = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private boolean isEmpty = true;
@@ -63,31 +71,38 @@ public class TimetableFragment extends Fragment {
         return view;
     }
 
-    private void takeCourses(String log, String pass) {
+    private void takeCourses(String log, String pass, boolean isTeacher) {
         SocketConnect socketConnect = new SocketConnect();
         String courses = "";
         try {
-            courses = (String)socketConnect.execute(SocketConnect.GET_COURSES,log, pass).get();
+            courses = (String)socketConnect.execute(SocketConnect.GET_COURSES, log, pass, isTeacher).get();
             if(courses.equals(SocketConnect.CONNECTION_ERROR) || courses.equals(SocketConnect.GO_DALEKO)) {
-                Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+                if(getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             } else {
                 String[] databases = courses.split("Андроид ");
                 courses = databases[1];
                 System.out.println(courses);
+                if (courses.equals("[]")) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            nothingText.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    isEmpty = false;
+                    parseCourses(courses, isTeacher);
+                }
             }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        }
-        if (courses.equals("[]")) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    nothingText.setVisibility(View.VISIBLE);
-                }
-            });
-        } else {
-            isEmpty = false;
-            parseCourses(courses);
         }
     }
 
@@ -102,11 +117,19 @@ public class TimetableFragment extends Fragment {
 
     @Override
     public void onResume() {
+        if (GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER")) {
+            updateTeacherCourses();
+        } else {
+            updateStudentCourses();
+        }
+        super.onResume();
+    }
 
+    private void updateTeacherCourses() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                takeCourses(MainActivity.userLogin, MainActivity.userPassword);
+                takeCourses(MainActivity.userLogin, MainActivity.userPassword, true);
                 if (getActivity()!=null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -128,25 +151,76 @@ public class TimetableFragment extends Fragment {
                 }
             }
         }).start();
-
-
-        super.onResume();
     }
 
-    private void parseCourses(String jsonFile) {
+    private void updateStudentCourses() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                takeCourses(MainActivity.userLogin, MainActivity.userPassword, false);
+                if (getActivity()!=null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.INVISIBLE);
+                            if (!isEmpty) {
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                                recyclerView.setLayoutManager(layoutManager);
+                                CoursestListAdapter coursestListAdapter = new CoursestListAdapter();
+                                recyclerView.setAdapter(coursestListAdapter);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                            } else {
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    private String parseMark(JSONArray array) {
+        try {
+            if (array.get(0) != null) {
+                ArrayList<Integer> marks = new ArrayList<>();
+                for (int j = 0; j < array.length(); j++) {
+                      marks.add(array.getInt(j));
+                }
+                return marks.get(0) + "," + marks.get(1) + "," + marks.get(2);
+            } else {
+                return "Not rated";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Not rated";
+    }
+
+    private void parseCourses(String jsonFile, boolean isTeacher) {
         OurData.courseDates = null;
         OurData.courseImageUrls = null;
         OurData.courseNames = null;
         OurData.courseTeachers = null;
+        OurData.lessonsDates = null;
+        OurData.currentLessonsDates = null;
+        OurData.homeworks = null;
+        OurData.currentHomeworks = null;
+        OurData.rates = null;
+        OurData.currentRates = null;
         courseImages.clear();
         courseTeachers.clear();
         courseNames.clear();
         courseDates.clear();
+        lessonDates.clear();
+        teacherAvatarUrls.clear();
+        homeworks.clear();
+        marks.clear();
         try {
             JSONArray jsonArray = new JSONArray(jsonFile);
             for (int i = 0; i < jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-
                 String courseName = jsonObject.getString("courseName");
                 String preDate = jsonObject.getString("preDate");
                 String date = jsonObject.getString("date");
@@ -159,6 +233,13 @@ public class TimetableFragment extends Fragment {
                 String homework = jsonObject.getString("homework");
                 String teacherAvatarUrl = jsonObject.getString("teacherAvatarUrl");
                 String[] homeworkk = new String[]{preHomework,homework,postHomework};
+                JSONArray preMark = jsonObject.getJSONArray("preMark");
+                JSONArray mark = jsonObject.getJSONArray("mark");
+                JSONArray postMark = jsonObject.getJSONArray("postMark");
+                String parsedPreMark = parseMark(preMark);
+                String parsedMark = parseMark(mark);
+                String parsedPostMark = parseMark(postMark);
+                marks.add(new String[]{parsedPreMark,parsedMark,parsedPostMark});
                 teacherAvatarUrls.add(teacherAvatarUrl);
                 lessonDates.add(dates);
                 homeworks.add(homeworkk);
@@ -181,7 +262,8 @@ public class TimetableFragment extends Fragment {
             OurData.lessonsDates = lessonDates.toArray();
             OurData.courseTeachersAvatarUrls = new String[teacherAvatarUrls.size()];
             OurData.courseTeachersAvatarUrls = teacherAvatarUrls.toArray(OurData.courseTeachersAvatarUrls);
-
+            OurData.rates = new Object[marks.size()];
+            OurData.rates = marks.toArray();
 
         } catch (JSONException e) {
             e.printStackTrace();

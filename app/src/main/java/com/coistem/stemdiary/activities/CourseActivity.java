@@ -1,13 +1,12 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.adapters.CoursesPageViewAdapter;
 
 public class CourseActivity extends AppCompatActivity {
     CoursesPageViewAdapter pageViewAdapter;

@@ -1,11 +1,13 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.adapters;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
+import com.coistem.stemdiary.fragments.CourseFragment;
+import com.coistem.stemdiary.OurData;
 
 public class CoursesPageViewAdapter extends FragmentPagerAdapter {
 
@@ -15,6 +17,7 @@ public class CoursesPageViewAdapter extends FragmentPagerAdapter {
     public static String courseName = "";
     private String[] homeworks = OurData.currentHomeworks;
     private String[] courseDates = OurData.currentLessonsDates;
+    private String[] rates = OurData.currentRates;
 
     public CoursesPageViewAdapter(FragmentManager fm) {
         super(fm);
@@ -28,7 +31,7 @@ public class CoursesPageViewAdapter extends FragmentPagerAdapter {
         arguments.putString(CourseFragment.TEACHER_AVATARS, teacherAvatarUrl);
         arguments.putString(CourseFragment.TEACHER_NAMES, teacherName);
         arguments.putString(CourseFragment.COURSE_DATES, courseDates[position]);
-
+        arguments.putString(CourseFragment.RATES, rates[position]);
         CourseFragment courseFragment = new CourseFragment();
         courseFragment.setArguments(arguments);
 

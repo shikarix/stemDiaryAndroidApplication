@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.coistem.stemdiary.OurData;
+import com.coistem.stemdiary.R;
 
-public class CartItemStatusAdapter extends RecyclerView.Adapter {
+public class PupilRatesAdapter extends RecyclerView.Adapter {
 
     private TextView cartItemName;
     private TextView cartItemStatus;
@@ -17,13 +19,13 @@ public class CartItemStatusAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listview_inworkitems,viewGroup,false);
-        return new CartItemStatusAdapter.ListViewHolder(view);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listview_rates,viewGroup,false);
+        return new PupilRatesAdapter.ListViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        ((CartItemStatusAdapter.ListViewHolder) viewHolder).bindView(i);
+        ((PupilRatesAdapter.ListViewHolder) viewHolder).bindView(i);
     }
 
     @Override

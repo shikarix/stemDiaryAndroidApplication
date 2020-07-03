@@ -302,8 +302,8 @@ public class ShopFragment extends Fragment {
                 String name = jsonObject.getString("title");
                 String img = jsonObject.getString("avatarUrl");
                 Integer cost = jsonObject.getInt("cost");
-                System.out.println(cost);
                 Integer itemId = jsonObject.getInt("id");
+                System.out.println(cost);
                 System.out.println(name);
                 System.out.println(img);
                 itemIds.add(itemId);

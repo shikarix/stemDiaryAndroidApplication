@@ -43,6 +43,8 @@ echo.
 echo Please set the JAVA_HOME variable in your environment to match the
 echo location of your Java installation.
 
+yes | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;29.0.2"
+
 goto fail
 
 :init

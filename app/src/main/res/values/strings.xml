@@ -11,6 +11,7 @@
     <string name="exit_message" translatable="false">Нажмите кнопку \"Назад\" еще раз, чтобы выйти</string>
     <string name="cost">Цена:</string>
     <string name="buyButton">Купить</string>
+    <string name="acceptButton">Купить</string>
     <string-array name="MyBestColors">
         <item>#008577</item>
         <item>#00547B</item>

@@ -1,4 +1,4 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,6 +16,9 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.SocketConnect;
 
 import org.json.JSONArray;
 import org.json.JSONException;

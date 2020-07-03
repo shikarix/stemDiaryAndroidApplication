@@ -1,23 +1,14 @@
 package com.coistem.stemdiary;
 
-import android.app.AlertDialog;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.coistem.stemdiary.activities.MainActivity;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 
 public class SocketConnect extends AsyncTask {
 
@@ -32,7 +23,10 @@ public class SocketConnect extends AsyncTask {
     public static final String GET_UNCONFIRMED_BASKET = "getUnconfBasket";
     public static final String GET_ALL_TEACHERS = "getAllTeachers";
     public static final String GET_ALL_PUPILS = "getAllPupils";
+    public static final String GET_CONFIRMED_BASKET = "getConfirmedBasket";
     public static final String ADD_COURSE = "addCourse";
+    public static final String ACCEPT_PURCHASE = "acceptPurchase";
+    public static final String CANCEL_PURCHASE = "cancelPurchase";
 
     public static final String GO_DALEKO = "Go daleko!";
     public static final String CONNECTION_ERROR = "Connection error";
@@ -89,35 +83,6 @@ public class SocketConnect extends AsyncTask {
 
 
     private String authorizate(String login, String password){
-//        try {
-//            try {
-//                socket = new Socket("192.168.1.100", 45654);
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-//                dataInputStream = new DataInputStream(socket.getInputStream());
-//                dos = new DataOutputStream(socket.getOutputStream());
-//                JSONObject jsonObject = new JSONObject();
-//                jsonObject.put("login",login);
-//                jsonObject.put("password",password);
-//                String s1 = jsonObject.toString();
-//                dos.writeUTF(s1);
-//                dos.flush();
-//                String s2 = dataInputStream.readUTF();
-//                Log.d("Server answer",s2);
-//                Log.d("Server input", s1);
-//                return s2;
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            } finally {
-//                dataInputStream.close();
-//                dos.close();
-//                socket.close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (NullPointerException e) {
-//            return "Connection error";
-//        }
-//        return "error";
         try {
             char[] log = login.toCharArray();
             String lg = "";
@@ -132,7 +97,7 @@ public class SocketConnect extends AsyncTask {
                 ps += pass[i];
             }
             System.out.println("LOGIN: "+lg+"PASSWORDDD: "+ps);
-            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/androidLogin/")
+            Document document = Jsoup.connect("http://"+ MainActivity.serverIp+"/androidLogin/")
                     .data("login", login)
                     .data("password", password)
                     .post();
@@ -143,6 +108,52 @@ public class SocketConnect extends AsyncTask {
             text = words[1];
             if(text.equals(SocketConnect.GO_DALEKO)) {
                 return GO_DALEKO;
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+
+    private String acceptPurchase(String basketId) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/confirm/")
+                    .data("login", MainActivity.userLogin,
+                            "password",MainActivity.userPassword,
+                            "basketId", basketId).post();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Я хз!")) {
+                return "hz";
+            } else if(text.equals("Good")) {
+                return "Good";
+            } else if(text.equals("Go daleko!")) {
+                return "Connection error";
+            } else {
+                return text;
+            }
+        } catch (IOException e) {
+            return "Connection error";
+        }
+    }
+
+    private String cancelPurchase(String basketId) {
+        try {
+            Document document = Jsoup.connect("http://"+MainActivity.serverIp+"/decline/")
+                    .data("login", MainActivity.userLogin,
+                            "password",MainActivity.userPassword,
+                            "basketId", basketId).post();
+            String text = document.text();
+            System.out.println(text);
+            if(text.equals("Я хз!")) {
+                return "hz";
+            } else if (text.contains("Логин")) {
+                return CONNECTION_ERROR;
+            } else if(text.equals("Good")) {
+                return "Good";
+            } else if(text.equals("Go daleko!")) {
+                return "Connection error";
             } else {
                 return text;
             }
@@ -169,16 +180,22 @@ public class SocketConnect extends AsyncTask {
         }
     }
 
-    private String getStudentCourses(String login, String password) {
+    private String getStudentCourses(String login, String password, Boolean isTeacher) {
         try {
-            Document document = Jsoup.connect("http://" + MainActivity.serverIp + "/getPupilCourses")
-                    .data("login", login)
-                    .data("password", password).post();
+            Document document = null;
+            if(!isTeacher) {
+                document = Jsoup.connect("http://" + MainActivity.serverIp + "/getPupilCourses")
+                        .data("login", login)
+                        .data("password", password).post();
+            } else {
+                document = Jsoup.connect("http://" + MainActivity.serverIp + "/getTeacherCourses")
+                        .data("login", login)
+                        .data("password", password).get();
+            }
             String text = document.text();
-            if (text.equals("Логин")) {
-                return "Access error";
-            } else if(text.equals("[]")) {
-                return "no courses";
+            System.out.println(text);
+            if (text.contains("Логин")) {
+                return GO_DALEKO;
             } else {
                 return text;
             }
@@ -269,13 +286,33 @@ public class SocketConnect extends AsyncTask {
             System.out.println(text);
             if(text.contains("Логин")) {
                 return "Connection error";
-            } else {
+            } else if(text.contains("Nothing!")) {
+                return GO_DALEKO;
+            } else{
                 return text;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return "Connection error";
         }
+        return CONNECTION_ERROR;
+    }
+
+    private String getConfirmedBasket() {
+        try {
+            Document basket = Jsoup.connect("http://" + MainActivity.serverIp + "/getAllConfirmedBaskets").data("login", MainActivity.userLogin, "password", MainActivity.userPassword).post();
+            String text = basket.text();
+            System.out.println(text);
+            if(text.contains("Логин")) {
+                return "Connection error";
+            } else if(text.contains("Nothing!")) {
+                return GO_DALEKO;
+            } else{
+                return text;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return CONNECTION_ERROR;
     }
 
     private String purchaseSomething(Integer id) {
@@ -316,37 +353,7 @@ public class SocketConnect extends AsyncTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        try {
-//            try {
-//                socket = new Socket("192.168.1.100", 45654);
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-//                dataInputStream = new DataInputStream(socket.getInputStream());
-//                dos = new DataOutputStream(socket.getOutputStream());
-//                JSONObject jsonObject = new JSONObject();
-//                jsonObject.put("token", token);
-//                jsonObject.put("command","getShop");
-//                String s1 = jsonObject.toString();
-//                dos.writeUTF(s1);
-//                dos.flush();
-//                String s2 = dataInputStream.readUTF();
-//                Log.d("Server answer",s2);
-//                Log.d("Server input", s1);
-//                return s2;
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            } finally {
-//                dataInputStream.close();
-//                dos.close();
-//                socket.close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (NullPointerException e) {
-//            return "Connection error";
-//        }
-
-        return "error";
+        return CONNECTION_ERROR;
     }
 
     private String takeAllTeachers() {
@@ -365,8 +372,8 @@ public class SocketConnect extends AsyncTask {
             return CONNECTION_ERROR;
         }
     }
-    private String addCourse(String courseName, Long date, String[] pupils, String teacherLogin, String imageUrl) {
-        Connection data = Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse").data("login", MainActivity.userLogin, "password", MainActivity.userPassword, "name", courseName, "date", date.toString(), "teacher", teacherLogin, "imgSrc", imageUrl);
+    private String addCourse(String courseName, String date, String[] pupils, String teacherLogin, String imageUrl) {
+        Connection data = Jsoup.connect("http://" + MainActivity.serverIp + "/addCourse").data("login", MainActivity.userLogin, "password", MainActivity.userPassword, "name", courseName, "date", date, "teacher", teacherLogin, "imgSrc", imageUrl);
         for (int i = 0; i < pupils.length; i++) {
             data.data("pupils", pupils[i]);
         }
@@ -403,7 +410,6 @@ public class SocketConnect extends AsyncTask {
 
     @Override
     protected void onPreExecute() {
-//        LoginActivity.loadingDialog.show();
         super.onPreExecute();
     }
 
@@ -440,7 +446,7 @@ public class SocketConnect extends AsyncTask {
                 return sendStudentRate((String) objects[1],(String) objects[2],(String) objects[3],(int) objects[4],(int) objects[5],(int) objects[6]);
             }
             case GET_COURSES: {
-                return getStudentCourses((String) objects[1], (String) objects[2]);
+                return getStudentCourses((String) objects[1], (String) objects[2], (Boolean) objects[3]);
             }
             case GET_ALL_TEACHERS: {
                 return takeAllTeachers();
@@ -449,7 +455,16 @@ public class SocketConnect extends AsyncTask {
                 return takeAllPupils();
             }
             case ADD_COURSE: {
-                return addCourse((String) objects[1], (Long) objects[2], (String[]) objects[3], (String) objects[4], (String) objects[5]);
+                return addCourse((String) objects[1], (String) objects[2], (String[]) objects[3], (String) objects[4], (String) objects[5]);
+            }
+            case ACCEPT_PURCHASE: {
+                return acceptPurchase((String) objects[1]);
+            }
+            case CANCEL_PURCHASE: {
+                return cancelPurchase((String) objects[1]);
+            }
+            case GET_CONFIRMED_BASKET: {
+                return getConfirmedBasket();
             }
         }
         return "unknown command";
