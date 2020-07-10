@@ -1,7 +1,9 @@
-package com.coistem.stemdiary;
+package com.coistem.stemdiary.entities;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.coistem.stemdiary.JSONFileEditing;
 
 import org.json.JSONArray;
 import org.json.JSONException;

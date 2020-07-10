@@ -14,6 +14,7 @@
         android:layout_height="280dp"
         android:src="@color/design_default_color_primary"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,11 +68,11 @@
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="24dp"
-        android:layout_height="27dp"
+        android:layout_height="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_account_balance_wallet_black_24dp"
+        android:src="@drawable/stem_coin"
         app:layout_constraintBottom_toBottomOf="@+id/coinsText"
         app:layout_constraintEnd_toStartOf="@+id/coinsText"
         app:layout_constraintHorizontal_bias="1.0"
@@ -94,18 +95,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exitButton2" />
+        app:layout_constraintTop_toBottomOf="@+id/settingsButton" />
 
     <Button
-        android:id="@+id/exitButton2"
+        android:id="@+id/settingsButton"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:drawableLeft="@drawable/ic_color_lens_black"
-        android:text="\tТемная тема"
+        android:drawableLeft="@drawable/ic_baseline_settings_24"
+        android:enabled="true"
+        android:text="\tНастройки"
         android:textAlignment="textStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
@@ -114,13 +116,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
-    <Switch
-        android:id="@+id/darkThemeSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/exitButton2"
-        app:layout_constraintEnd_toEndOf="@+id/exitButton2"
-        app:layout_constraintTop_toTopOf="@+id/exitButton2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

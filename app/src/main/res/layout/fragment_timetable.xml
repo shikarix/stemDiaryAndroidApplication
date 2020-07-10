@@ -40,7 +40,7 @@
 <!--        app:layout_constraintTop_toTopOf="parent" >-->
 <!--    </WebView>-->
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.chauthai.overscroll.RecyclerViewBouncy
         android:id="@+id/coursesList"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -68,10 +68,13 @@
 
     <TextView
         android:id="@+id/nothingInTimeTableText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:fontFamily="@font/roboto_black"
         android:text="Кажется, у вас нет ни одного курса!"
+        android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/nav_view2"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,7 +3,7 @@ package com.coistem.stemdiary.fragments;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.entities.GetUserInfo;
 import com.coistem.stemdiary.OurData;
 import com.coistem.stemdiary.R;
 import com.coistem.stemdiary.adapters.NewsListAdapter;
@@ -58,14 +58,10 @@ public class NewsFragment extends Fragment {
     private ArrayList<String> postUrls = new ArrayList<>();
 
     public void vkRequest() {
-
-        OurData.title = null;
-        OurData.imgUrls = null;
-        OurData.dates = null;
         newsText.clear();
         imageURLs.clear();
         newsDates.clear();
-
+        postUrls.clear();
         if(isAlreadyWork) {
             return;
         }
@@ -153,10 +149,10 @@ public class NewsFragment extends Fragment {
 
     @Override
     public void onStop() {
-        OurData.dates = null;
-        OurData.imgUrls = null;
-        OurData.title = null;
-        OurData.urlsForPost = null;
+        imageURLs.clear();
+        postUrls.clear();
+        newsDates.clear();
+        newsText.clear();
         super.onStop();
     }
 }

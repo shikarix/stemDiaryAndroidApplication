@@ -1,13 +1,10 @@
 package com.coistem.stemdiary.fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -22,7 +19,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.activities.SettingsActivity;
+import com.coistem.stemdiary.entities.GetUserInfo;
 import com.coistem.stemdiary.R;
 import com.coistem.stemdiary.activities.LoginActivity;
 import com.coistem.stemdiary.activities.MainActivity;
@@ -37,27 +35,12 @@ public class InfoFragment extends Fragment {
     private AlertDialog avatarUrlDialog;
     private AlertDialog.Builder avatarUrlBuilder;
     private Switch darkThemeSwitch;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_info, container, false);
-        darkThemeSwitch = view.findViewById(R.id.darkThemeSwitch);
-
-        View.OnClickListener darkThemeSwitchListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (darkThemeSwitch.isChecked()) {
-                    getActivity().setTheme(R.style.DarkTheme);
-//                    darkThemeSwitch.setChecked(true);
-//                    getActivity().recreate();
-                } else {
-                    getActivity().setTheme(R.style.CustomTheme);
-//                    darkThemeSwitch.setChecked(false);
-                }
-            }
-        };
-        darkThemeSwitch.setOnClickListener(darkThemeSwitchListener);
         avatar = view.findViewById(R.id.teacherAvatarImage);
         final EditText input = new EditText(getContext());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -81,26 +64,30 @@ public class InfoFragment extends Fragment {
                     }
                 })
         ;
+        Button settingsButton = view.findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
         avatarUrlDialog = avatarUrlBuilder.create();
-//        Log.d("Server avatar url",GetUserInfo.avatarUrl);
-//        avatar.setBorderWidth(20);
-//        avatar.setBorderColor(Color.YELLOW);
         if(GetUserInfo.avatarUrl.equals("")) {
             Picasso.with(getContext()).load(R.drawable.stem_logo).error(R.drawable.stem_logo).into(avatar);
         } else {
             Picasso.with(getContext()).load(GetUserInfo.avatarUrl).error(R.drawable.stem_logo).into(avatar);
         }
-        avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                    avatarUrlDialog.show();
-//                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-//                photoPickerIntent.setType("image/*");
-//                startActivityForResult(photoPickerIntent, 1);
-
-            }
-        });
+//        avatar.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                    avatarUrlDialog.show();
+////                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+////                photoPickerIntent.setType("image/*");
+////                startActivityForResult(photoPickerIntent, 1);
+//
+//            }
+//        });
         TextView nameTxt = view.findViewById(R.id.nameText);
         nameTxt.setText(GetUserInfo.userSurname+" "+GetUserInfo.userName);
         TextView coinsTxt = view.findViewById(R.id.coinsText);
@@ -123,6 +110,10 @@ public class InfoFragment extends Fragment {
         editor.putString("password",null);
         editor.putBoolean("isChecked",false);
         editor.apply();
+        preferences = this.getActivity().getSharedPreferences(SettingsActivity.SETTINGS_PREF, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        editor.putBoolean(SettingsActivity.NOTIFY_PREF, false);
+        editor.apply();
         Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);
         getActivity().finish();
@@ -133,25 +124,5 @@ public class InfoFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode)
-        {
-            case 1:
-            {
-                if (resultCode == Activity.RESULT_OK)
-                {
-                    Bitmap bitmap = null;
-                    Uri selectedImage = data.getData();
-                    String encodedPath = selectedImage.getEncodedPath();
-//                    System.out.println(encodedPath);
-//                    try {
-//                        Picasso.
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-////                    avatar.setImageBitmap(bitmap);
-                }
-                break;
-            }
-        }
     }
 }

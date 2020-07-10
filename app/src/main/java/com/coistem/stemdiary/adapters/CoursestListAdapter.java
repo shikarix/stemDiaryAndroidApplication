@@ -11,9 +11,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.coistem.stemdiary.entities.GetUserInfo;
 import com.coistem.stemdiary.activities.CourseActivity;
 import com.coistem.stemdiary.OurData;
 import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.activities.EditLessonActivity;
 import com.squareup.picasso.Picasso;
 
 public class CoursestListAdapter extends RecyclerView.Adapter {
@@ -64,7 +66,7 @@ public class CoursestListAdapter extends RecyclerView.Adapter {
         }
         public void bindView(int position) {
             courseTextView.setText(OurData.courseNames[position]);
-            Picasso.with(itemView.getContext()).load(OurData.courseImageUrls[position]).error(R.drawable.stem_logo).into(courseImageView);
+            Picasso.with(itemView.getContext()).load(OurData.courseImageUrls[position]).error(R.drawable.stem_logo).placeholder(R.drawable.stem_logo).into(courseImageView);
             String date = OurData.courseDates[position];
             courseDateView.setText("Ближайшее занятие: \n"+date);
             courseTeacherTextView.setText("Учитель: \n" +OurData.courseTeachers[position]);
@@ -73,7 +75,11 @@ public class CoursestListAdapter extends RecyclerView.Adapter {
         }
 
         public void onClick(View view) {
-            OurData.currentRates = (String[]) OurData.rates[position];
+            if (!(GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER"))) {
+                OurData.currentRates = (String[]) OurData.rates[position];
+            } else {
+                EditLessonActivity.pupils = OurData.pupilRates[position];
+            }
             OurData.currentHomeworks = (String[]) OurData.homeworks[position];
             OurData.currentLessonsDates = (String[]) OurData.lessonsDates[position];
             CoursesPageViewAdapter.courseName = OurData.courseNames[position];

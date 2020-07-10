@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.coistem.stemdiary.entities.GetUserInfo;
 import com.coistem.stemdiary.fragments.CourseFragment;
 import com.coistem.stemdiary.OurData;
 
@@ -23,6 +24,10 @@ public class CoursesPageViewAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
+    public void returnToHome() {
+
+    }
+
     @Override
     public Fragment getItem(int position) {
         Bundle arguments = new Bundle();
@@ -31,7 +36,25 @@ public class CoursesPageViewAdapter extends FragmentPagerAdapter {
         arguments.putString(CourseFragment.TEACHER_AVATARS, teacherAvatarUrl);
         arguments.putString(CourseFragment.TEACHER_NAMES, teacherName);
         arguments.putString(CourseFragment.COURSE_DATES, courseDates[position]);
-        arguments.putString(CourseFragment.RATES, rates[position]);
+        if (!(GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER"))) {
+            arguments.putString(CourseFragment.RATES, rates[position]);
+        } else {
+            arguments.putString(CourseFragment.RATES, null);
+        }
+        switch (position) {
+            case 0: {
+                arguments.putString(CourseFragment.WHICH_LESSON, "pre");
+                break;
+            }
+            case 1: {
+                arguments.putString(CourseFragment.WHICH_LESSON, "now");
+                break;
+            }
+            case 2: {
+                arguments.putString(CourseFragment.WHICH_LESSON, "post");
+                break;
+            }
+        }
         CourseFragment courseFragment = new CourseFragment();
         courseFragment.setArguments(arguments);
 

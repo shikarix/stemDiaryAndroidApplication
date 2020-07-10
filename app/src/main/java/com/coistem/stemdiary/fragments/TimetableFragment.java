@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.entities.GetUserInfo;
 import com.coistem.stemdiary.OurData;
 import com.coistem.stemdiary.R;
 import com.coistem.stemdiary.SocketConnect;
@@ -42,6 +42,7 @@ public class TimetableFragment extends Fragment {
     private ArrayList<String[]> homeworks = new ArrayList<>();
     private ArrayList<String[]> lessonDates = new ArrayList<>();
     private ArrayList<String[]> marks = new ArrayList<>();
+    private ArrayList<JSONArray> pupilArrays = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private boolean isEmpty = true;
@@ -56,7 +57,7 @@ public class TimetableFragment extends Fragment {
         progressBar = view.findViewById(R.id.timetableProgressBar);
         fab = view.findViewById(R.id.timetableFab);
         fab.hide();
-        if (GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER")) {
+        if (GetUserInfo.userAccessType.equals("ADMIN")) {
             fab.show();
         }
         fab.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +72,7 @@ public class TimetableFragment extends Fragment {
         return view;
     }
 
-    private void takeCourses(String log, String pass, boolean isTeacher) {
+    public void takeCourses(String log, String pass, boolean isTeacher) {
         SocketConnect socketConnect = new SocketConnect();
         String courses = "";
         try {
@@ -81,7 +82,7 @@ public class TimetableFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getContext(), "Возникла ошибка при получении данных с сервера.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -108,17 +109,18 @@ public class TimetableFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        OurData.courseDates = null;
-        OurData.courseImageUrls = null;
-        OurData.courseNames = null;
-        OurData.courseTeachers = null;
+        clearArrays();
         super.onDestroyView();
     }
 
     @Override
     public void onResume() {
-        if (GetUserInfo.userAccessType.equals("ADMIN") || GetUserInfo.userAccessType.equals("TEACHER")) {
+        if (GetUserInfo.userAccessType.equals("TEACHER")) {
             updateTeacherCourses();
+        } else if (GetUserInfo.userAccessType.equals("ADMIN")) {
+            progressBar.setVisibility(View.INVISIBLE);
+            nothingText.setText("Вы вошли как администратор. \nОтображение курсов невозможно.");
+            nothingText.setVisibility(View.VISIBLE);
         } else {
             updateStudentCourses();
         }
@@ -198,17 +200,7 @@ public class TimetableFragment extends Fragment {
         return "Not rated";
     }
 
-    private void parseCourses(String jsonFile, boolean isTeacher) {
-        OurData.courseDates = null;
-        OurData.courseImageUrls = null;
-        OurData.courseNames = null;
-        OurData.courseTeachers = null;
-        OurData.lessonsDates = null;
-        OurData.currentLessonsDates = null;
-        OurData.homeworks = null;
-        OurData.currentHomeworks = null;
-        OurData.rates = null;
-        OurData.currentRates = null;
+    private void clearArrays() {
         courseImages.clear();
         courseTeachers.clear();
         courseNames.clear();
@@ -217,6 +209,11 @@ public class TimetableFragment extends Fragment {
         teacherAvatarUrls.clear();
         homeworks.clear();
         marks.clear();
+        pupilArrays.clear();
+    }
+
+    private void parseCourses(String jsonFile, boolean isTeacher) {
+        clearArrays();
         try {
             JSONArray jsonArray = new JSONArray(jsonFile);
             for (int i = 0; i < jsonArray.length(); i++){
@@ -233,13 +230,18 @@ public class TimetableFragment extends Fragment {
                 String homework = jsonObject.getString("homework");
                 String teacherAvatarUrl = jsonObject.getString("teacherAvatarUrl");
                 String[] homeworkk = new String[]{preHomework,homework,postHomework};
-                JSONArray preMark = jsonObject.getJSONArray("preMark");
-                JSONArray mark = jsonObject.getJSONArray("mark");
-                JSONArray postMark = jsonObject.getJSONArray("postMark");
-                String parsedPreMark = parseMark(preMark);
-                String parsedMark = parseMark(mark);
-                String parsedPostMark = parseMark(postMark);
-                marks.add(new String[]{parsedPreMark,parsedMark,parsedPostMark});
+                if(!isTeacher) {
+                    JSONArray preMark = jsonObject.getJSONArray("preMark");
+                    JSONArray mark = jsonObject.getJSONArray("mark");
+                    JSONArray postMark = jsonObject.getJSONArray("postMark");
+                    String parsedPreMark = parseMark(preMark);
+                    String parsedMark = parseMark(mark);
+                    String parsedPostMark = parseMark(postMark);
+                    marks.add(new String[]{parsedPreMark, parsedMark, parsedPostMark});
+                } else {
+                    JSONArray pupils = jsonObject.getJSONArray("pupils");
+                    pupilArrays.add(pupils);
+                }
                 teacherAvatarUrls.add(teacherAvatarUrl);
                 lessonDates.add(dates);
                 homeworks.add(homeworkk);
@@ -262,8 +264,13 @@ public class TimetableFragment extends Fragment {
             OurData.lessonsDates = lessonDates.toArray();
             OurData.courseTeachersAvatarUrls = new String[teacherAvatarUrls.size()];
             OurData.courseTeachersAvatarUrls = teacherAvatarUrls.toArray(OurData.courseTeachersAvatarUrls);
-            OurData.rates = new Object[marks.size()];
-            OurData.rates = marks.toArray();
+            if(!isTeacher) {
+                OurData.rates = new Object[marks.size()];
+                OurData.rates = marks.toArray();
+            } else {
+                OurData.pupilRates = new JSONArray[pupilArrays.size()];
+                OurData.pupilRates = pupilArrays.toArray(OurData.pupilRates);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();

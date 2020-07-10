@@ -3,6 +3,7 @@ package com.coistem.stemdiary.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.coistem.stemdiary.OurData;
 import com.coistem.stemdiary.R;
+import com.coistem.stemdiary.entities.AdminCartItem;
+
+import java.util.List;
 
 
 public class CartItemStatusAdapter extends RecyclerView.Adapter {

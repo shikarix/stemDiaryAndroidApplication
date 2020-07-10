@@ -47,6 +47,7 @@ public class OurData {
     public static String[] currentLessonsDates;
     public static Object[] rates;
     public static String[] currentRates;
+    public static JSONArray[] pupilRates;
 
     public static String[] coursePupilPagesNames;
     public static String[] coursePupilPagesAvatarUrls;

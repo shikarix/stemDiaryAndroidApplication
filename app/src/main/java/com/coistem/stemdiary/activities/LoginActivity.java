@@ -22,7 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.coistem.stemdiary.CheckingConnection;
-import com.coistem.stemdiary.GetUserInfo;
+import com.coistem.stemdiary.entities.GetUserInfo;
 import com.coistem.stemdiary.R;
 import com.coistem.stemdiary.SocketConnect;
 import com.vk.sdk.VKAccessToken;
@@ -41,6 +41,7 @@ public class LoginActivity extends Activity {
     HashMap<String,String> accounts = new HashMap<>();
     private EditText loginText;
     private EditText passwordTxt;
+    private Button signInButton;
     private AlertDialog.Builder loadingBuilder;
     public static AlertDialog loadingDialog;
     private AlertDialog loginErrorDialog;
@@ -65,7 +66,7 @@ public class LoginActivity extends Activity {
         passwordTxt = findViewById(R.id.pswTxt);
 //        isLocalServerBox = findViewById(R.id.isLocalServerCheck);
         showPassIcon = findViewById(R.id.showPasswordView);
-        final Button signInButton = findViewById(R.id.loginInBtn);
+        signInButton = findViewById(R.id.loginInBtn);
 
         sharedPreferences = getSharedPreferences("logins",MODE_PRIVATE);
         editor = sharedPreferences.edit();

@@ -25,6 +25,7 @@
         <item name="colorPrimaryDark">#000</item>
         <item name="colorPrimary">@color/greenButtonColor</item>
         <item name="colorAccent">@color/greenButtonColor</item>
+        <item name="cardBackgroundColor">@color/shopCardBackground</item>
     </style>
 
     <style name="AppFullScreenTheme" parent="Theme.AppCompat.Dialog.Alert">
