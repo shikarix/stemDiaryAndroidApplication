@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/CustomTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.SettingsActivity"></activity>
+        <activity android:name=".activities.SettingsActivity" />
 
         <service
             android:name=".NextLessonService"
@@ -45,7 +45,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ImageActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppFullScreenTheme" />
         <activity
             android:name=".activities.AddingTimetableActivity"
@@ -54,7 +53,6 @@
         <activity
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/VK.Transparent" />
         <activity
             android:name=".activities.MainActivity"

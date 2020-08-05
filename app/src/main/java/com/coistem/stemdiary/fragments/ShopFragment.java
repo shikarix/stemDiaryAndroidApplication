@@ -121,9 +121,6 @@ public class ShopFragment extends Fragment {
                 showCartDialog();
             }
         });
-        if (GetUserInfo.userAccessType.equals("ADMIN")) {
-            adminStatusCart.show();
-        }
         adminStatusCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -293,6 +290,9 @@ public class ShopFragment extends Fragment {
                         shopList.setLayoutManager(layoutManager);
                         shopLoading.setVisibility(View.INVISIBLE);
                         shoppingCartButton.show();
+                        if (GetUserInfo.userAccessType.equals("ADMIN")) {
+                            adminStatusCart.show();
+                        }
                     }
                 }
             });
@@ -391,6 +391,7 @@ public class ShopFragment extends Fragment {
                 if(!stat.equals(SocketConnect.CONNECTION_ERROR)) {
                     String[] databases = stat.split("Андроид ");
                     stat = databases[1];
+                    socketConnect = new SocketConnect();
                 } else {
                     isSendOk = false;
                     break;

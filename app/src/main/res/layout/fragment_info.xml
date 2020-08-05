@@ -106,7 +106,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:drawableLeft="@drawable/ic_baseline_settings_24"
-        android:enabled="true"
+        android:enabled="false"
         android:text="\tНастройки"
         android:textAlignment="textStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"

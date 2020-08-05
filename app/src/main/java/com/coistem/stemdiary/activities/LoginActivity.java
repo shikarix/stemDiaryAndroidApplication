@@ -49,6 +49,7 @@ public class LoginActivity extends Activity {
     private AlertDialog errorConnectionDialog;
     private AlertDialog.Builder errorConnectionBuilder;
     private SharedPreferences sharedPreferences;
+    private AlertDialog vkAuthDialog;
     private SharedPreferences.Editor editor;
     private CheckBox rememberBox;
     private String isSuccesfulLogin;
@@ -73,7 +74,25 @@ public class LoginActivity extends Activity {
 
         String loginSP = sharedPreferences.getString("login", null);
         String passwordSP = sharedPreferences.getString("password", null);
-
+        vkAuthDialog = new AlertDialog.Builder(LoginActivity.this)
+                .setTitle("Авторизация в ВК")
+                .setMessage("Добро пожаловать в приложение \"StemDiary\"!\nДля корректной работы приложения и раздела новостей, необходимо авторизироваться в ВК.\nНе переживайте, авторизация проходит через сервис Oauth от ВКонтакте, поэтому ваши данные и страница будут в безопасности.")
+                .setPositiveButton("Продолжить", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String[] scope = {VKScope.FRIENDS};
+                        VKSdk.login(LoginActivity.this,scope);
+                        MainActivity.userLogin = login;
+                        MainActivity.userPassword = password;
+                    }
+                })
+                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        vkAuthDialog.dismiss();
+                    }
+                })
+                .create();
         boolean isChecked = sharedPreferences.getBoolean("isChecked",false);
 
         rememberBox = findViewById(R.id.rememberCheck);
@@ -250,13 +269,6 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private void addAccounts() {
-        accounts.put("user","12345");
-        accounts.put("eremin15","1337228");
-        accounts.put("yeliseyenko23","56789");
-        accounts.put("vasilev75","54321");
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -296,11 +308,7 @@ public class LoginActivity extends Activity {
                 }).run();
                 if(isSuccesfulLogin.equals("Successful")) {
                     if(!VKSdk.isLoggedIn()) {
-                        Toast.makeText(LoginActivity.this, "Пожалуйста, авторизуйтесь.", Toast.LENGTH_SHORT).show();
-                        String[] scope = {VKScope.FRIENDS};
-                        VKSdk.login(LoginActivity.this,scope);
-                        MainActivity.userLogin = login;
-                        MainActivity.userPassword = password;
+                        vkAuthDialog.show();
                     } else {
                         MainActivity.userLogin = login;
                         MainActivity.userPassword = password;
@@ -314,7 +322,7 @@ public class LoginActivity extends Activity {
                 }
 
             } else {
-                Toast.makeText(LoginActivity.this, "НЕТ ИНТЕРНЕТА КАШМАР КАКОЙТА", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(LoginActivity.this, "НЕТ ИНТЕРНЕТА КАШМАР КАКОЙТА", Toast.LENGTH_SHORT).show();
                 errorConnectionDialog.show();
             }
             super.onPostExecute(o);
@@ -333,6 +341,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onError(VKError error) {
                 // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+                Toast.makeText(LoginActivity.this, "Вы отменили авторизацию. Дальнейшая авторизация невозможна", Toast.LENGTH_SHORT).show();
             }
         })) {
             super.onActivityResult(requestCode, resultCode, data);
